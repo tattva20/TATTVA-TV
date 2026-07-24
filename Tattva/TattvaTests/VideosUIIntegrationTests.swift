@@ -98,6 +98,19 @@ class VideosUIIntegrationTests: XCTestCase {
 		assertThat(sut, isRendering: [video0, video1, video2, video3])
 	}
 
+	func test_videoView_isAccessibleAsAButtonLabeledWithTitleAndDescription() async {
+		let video = makeVideo(title: "Big Buck Bunny", description: "A rabbit")
+		let (sut, loader) = makeSUT()
+
+		sut.simulateAppearance()
+		await loader.completeLoading(with: [video], at: 0)
+
+		let cell = sut.videoView(at: 0)
+		XCTAssertEqual(cell?.isAccessibilityElement, true, "The feed cell should be a single VoiceOver element")
+		XCTAssertEqual(cell?.accessibilityLabel, "Big Buck Bunny. A rabbit")
+		XCTAssertEqual(cell?.accessibilityTraits.contains(.button), true, "Selecting a video plays it, so the cell should read as a button")
+	}
+
 	func test_loadVideoCompletion_rendersSuccessfullyLoadedEmptyVideosAfterNonEmptyVideos() async {
 		let video = makeVideo()
 		let (sut, loader) = makeSUT()

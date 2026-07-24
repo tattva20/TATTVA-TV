@@ -6,6 +6,7 @@
 //
 import UIKit
 import StreamingCore
+import StreamingCoreAccessibility
 
 public protocol VideoCellControllerDelegate {
 	func didRequestImage()
@@ -38,6 +39,9 @@ extension VideoCellController: UITableViewDataSource, UITableViewDelegate, UITab
 		cell = tableView.dequeueReusableCell()
 		cell?.titleLabel.text = viewModel.title
 		cell?.descriptionLabel.text = viewModel.description
+		cell?.accessible(
+			label: [viewModel.title, viewModel.description].compactMap { $0 }.joined(separator: ". "),
+			role: .button)
 		cell?.videoImageView.image = nil
 		cell?.videoImageContainer.isShimmering = true
 		cell?.videoImageRetryButton.isHidden = true

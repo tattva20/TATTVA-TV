@@ -14,6 +14,7 @@
 		6ECF5C5B2EDB4372004A0835 /* StreamingCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6ECF5BCB2EDB4200004A0835 /* StreamingCore.framework */; };
 		7DCB00000000000000000008 /* StreamingCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6ECF5BCB2EDB4200004A0835 /* StreamingCore.framework */; };
 		7DAC00000000000000000008 /* StreamingCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6ECF5BCB2EDB4200004A0835 /* StreamingCore.framework */; };
+		7DAC00000000000000000011 /* StreamingCoreAccessibility.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7DAC00000000000000000001 /* StreamingCoreAccessibility.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -65,6 +66,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = 6ECF5BCA2EDB4200004A0835;
 			remoteInfo = StreamingCore;
+		};
+		7DAC00000000000000000012 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 6ECF5BC22EDB4200004A0835 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 7DAC00000000000000000003;
+			remoteInfo = StreamingCoreAccessibility;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -143,6 +151,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				6ECF5C022EDB4261004A0835 /* StreamingCore.framework in Frameworks */,
+				7DAC00000000000000000011 /* StreamingCoreAccessibility.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -320,6 +329,7 @@
 			);
 			dependencies = (
 				6ECF5C052EDB4261004A0835 /* PBXTargetDependency */,
+				7DAC00000000000000000013 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				6ECF5BEB2EDB4252004A0835 /* StreamingCoreiOS */,
@@ -665,6 +675,11 @@
 			isa = PBXTargetDependency;
 			target = 6ECF5BCA2EDB4200004A0835 /* StreamingCore */;
 			targetProxy = 7DAC00000000000000000009 /* PBXContainerItemProxy */;
+		};
+		7DAC00000000000000000013 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 7DAC00000000000000000003 /* StreamingCoreAccessibility */;
+			targetProxy = 7DAC00000000000000000012 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
