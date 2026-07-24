@@ -1,5 +1,6 @@
 import UIKit
 import StreamingCore
+import StreamingCoreAccessibility
 
 @MainActor
 public enum TVVideosUIComposer {
@@ -33,6 +34,7 @@ public enum TVVideosUIComposer {
 			imageLoader: imageLoader,
 			selection: selection)
 		adapter.feedViewController = feedViewController
+		adapter.announcer = UIKitAnnouncer()
 
 		feedViewController.onRefresh = { adapter.loadFeed() }
 		feedViewController.onLoadMore = { adapter.loadMoreIfAvailable() }
