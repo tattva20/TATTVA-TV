@@ -13,6 +13,7 @@
 		6ECF5C4D2EDB4330004A0835 /* StreamingCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6ECF5BCB2EDB4200004A0835 /* StreamingCore.framework */; };
 		6ECF5C5B2EDB4372004A0835 /* StreamingCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6ECF5BCB2EDB4200004A0835 /* StreamingCore.framework */; };
 		7DCB00000000000000000008 /* StreamingCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6ECF5BCB2EDB4200004A0835 /* StreamingCore.framework */; };
+		7DAC00000000000000000008 /* StreamingCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6ECF5BCB2EDB4200004A0835 /* StreamingCore.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -52,6 +53,13 @@
 			remoteInfo = StreamingCore;
 		};
 		7DCB00000000000000000009 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 6ECF5BC22EDB4200004A0835 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 6ECF5BCA2EDB4200004A0835;
+			remoteInfo = StreamingCore;
+		};
+		7DAC00000000000000000009 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 6ECF5BC22EDB4200004A0835 /* Project object */;
 			proxyType = 1;
@@ -174,6 +182,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7DAC00000000000000000008 /* StreamingCore.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -427,6 +436,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				7DAC0000000000000000000A /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				7DAC00000000000000000002 /* StreamingCoreAccessibility */,
@@ -650,6 +660,11 @@
 			isa = PBXTargetDependency;
 			target = 6ECF5BCA2EDB4200004A0835 /* StreamingCore */;
 			targetProxy = 7DCB00000000000000000009 /* PBXContainerItemProxy */;
+		};
+		7DAC0000000000000000000A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 6ECF5BCA2EDB4200004A0835 /* StreamingCore */;
+			targetProxy = 7DAC00000000000000000009 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
