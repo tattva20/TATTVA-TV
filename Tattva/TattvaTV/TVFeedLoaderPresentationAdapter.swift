@@ -1,5 +1,6 @@
 import UIKit
 import StreamingCore
+import StreamingCoreAccessibility
 
 @MainActor
 final class TVFeedLoaderPresentationAdapter {
@@ -8,6 +9,7 @@ final class TVFeedLoaderPresentationAdapter {
 	private let selection: @MainActor (Video) -> Void
 
 	weak var feedViewController: TVVideoFeedViewController?
+	var announcer: Announcer?
 
 	private var accumulatedVideos: [Video] = []
 	private var loadMore: (@Sendable () async throws -> Paginated<Video>)?
@@ -57,5 +59,6 @@ final class TVFeedLoaderPresentationAdapter {
 			return TVCellController(id: video, cellController)
 		}
 		feedViewController?.display(controllers)
+		announcer?.announce("\(accumulatedVideos.count) videos")
 	}
 }
