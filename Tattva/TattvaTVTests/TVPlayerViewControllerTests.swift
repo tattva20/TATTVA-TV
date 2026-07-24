@@ -30,6 +30,23 @@ final class TVPlayerViewControllerTests: XCTestCase {
 		XCTAssertTrue(sut.customInfoViewControllers.contains(comments), "Expected the comments controller to be shown as a custom info panel")
 	}
 
+	func test_viewDidLoad_offersProfessionalPlaybackSpeeds() {
+		let sut = TVPlayerViewController(video: makeVideo(url: anyURL()))
+
+		sut.loadViewIfNeeded()
+
+		XCTAssertEqual(sut.speeds.map(\.rate), [0.5, 1.0, 1.25, 1.5, 2.0])
+	}
+
+	func test_viewDidLoad_addsRestartControlToTransportBar() {
+		let sut = TVPlayerViewController(video: makeVideo(url: anyURL()))
+
+		sut.loadViewIfNeeded()
+
+		let titles = sut.transportBarCustomMenuItems.compactMap { ($0 as? UIAction)?.title }
+		XCTAssertTrue(titles.contains("Restart"), "Expected a Restart control in the transport bar")
+	}
+
 	// MARK: - Helpers
 
 	private func anyURL() -> URL { URL(string: "https://a-host.com/a-stream.m3u8")! }

@@ -1,4 +1,5 @@
 import AVKit
+import UIKit
 import StreamingCore
 import StreamingCorePlayback
 
@@ -38,10 +39,31 @@ public final class TVPlayerViewController: AVPlayerViewController {
 		player = bundle.player
 		playbackBundle = bundle
 
+		configureAdvancedControls()
+
 		if let comments {
 			customInfoViewControllers = [comments]
 		}
 	}
+
+	private func configureAdvancedControls() {
+		speeds = Self.playbackSpeeds
+		transportBarCustomMenuItems = [makeRestartAction()]
+	}
+
+	private func makeRestartAction() -> UIMenuElement {
+		UIAction(title: "Restart", image: UIImage(systemName: "gobackward")) { [weak self] _ in
+			self?.player?.seek(to: .zero)
+		}
+	}
+
+	private static let playbackSpeeds: [AVPlaybackSpeed] = [
+		AVPlaybackSpeed(rate: 0.5, localizedName: "0.5×"),
+		AVPlaybackSpeed(rate: 1.0, localizedName: "1×"),
+		AVPlaybackSpeed(rate: 1.25, localizedName: "1.25×"),
+		AVPlaybackSpeed(rate: 1.5, localizedName: "1.5×"),
+		AVPlaybackSpeed(rate: 2.0, localizedName: "2×")
+	]
 
 	public override func viewDidAppear(_ animated: Bool) {
 		super.viewDidAppear(animated)
