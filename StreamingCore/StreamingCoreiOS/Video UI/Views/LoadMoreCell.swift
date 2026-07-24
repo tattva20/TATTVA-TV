@@ -5,6 +5,8 @@
 //  Copyright by Octavio Rojas all rights reserved.
 //
 import UIKit
+import StreamingCore
+import StreamingCoreAccessibility
 
 public class LoadMoreCell: UITableViewCell {
 
@@ -50,12 +52,26 @@ public class LoadMoreCell: UITableViewCell {
 			} else {
 				spinner.stopAnimating()
 			}
+			updateAccessibility()
 		}
 	}
 
 	public var message: String? {
 		get { messageLabel.text }
-		set { messageLabel.text = newValue }
+		set {
+			messageLabel.text = newValue
+			updateAccessibility()
+		}
+	}
+
+	private func updateAccessibility() {
+		if isLoading {
+			accessible(label: "Loading more videos", role: .none)
+		} else if let message = messageLabel.text, !message.isEmpty {
+			accessible(label: message, hint: "Retries loading more videos", role: .button)
+		} else {
+			isAccessibilityElement = false
+		}
 	}
 
 }

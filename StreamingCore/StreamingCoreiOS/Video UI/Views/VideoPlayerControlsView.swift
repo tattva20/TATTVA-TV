@@ -6,6 +6,8 @@
 //
 
 import UIKit
+import StreamingCore
+import StreamingCoreAccessibility
 
 public final class VideoPlayerControlsView: UIView {
 
@@ -192,15 +194,15 @@ public final class VideoPlayerControlsView: UIView {
 	}
 
 	private func configureAccessibility() {
-		playButton.accessibilityLabel = "Play"
-		seekForwardButton.accessibilityLabel = "Skip forward 10 seconds"
-		seekBackwardButton.accessibilityLabel = "Skip back 10 seconds"
-		muteButton.accessibilityLabel = "Mute"
-		playbackSpeedButton.accessibilityLabel = "Playback speed"
-		fullscreenButton.accessibilityLabel = "Enter full screen"
-		pipButton.accessibilityLabel = "Picture in Picture"
-		progressSlider.accessibilityLabel = "Playback position"
-		volumeSlider.accessibilityLabel = "Volume"
+		playButton.accessible(label: "Play", role: .button)
+		seekForwardButton.accessible(label: "Skip forward 10 seconds", role: .button)
+		seekBackwardButton.accessible(label: "Skip back 10 seconds", role: .button)
+		muteButton.accessible(label: "Mute", role: .button)
+		playbackSpeedButton.accessible(label: "Playback speed", role: .button)
+		fullscreenButton.accessible(label: "Enter full screen", role: .button)
+		pipButton.accessible(label: "Picture in Picture", role: .button)
+		progressSlider.accessible(label: "Playback position", role: .adjustable)
+		volumeSlider.accessible(label: "Volume", role: .adjustable)
 	}
 
 	private func setupTapGesture() {
@@ -214,31 +216,31 @@ public final class VideoPlayerControlsView: UIView {
 	public func setPlayButtonPlaying(_ isPlaying: Bool) {
 		let icon = isPlaying ? "pause.fill" : "play.fill"
 		playButton.setImage(UIImage(systemName: icon), for: .normal)
-		playButton.accessibilityLabel = isPlaying ? "Pause" : "Play"
+		playButton.accessible(label: isPlaying ? "Pause" : "Play", role: .button)
 	}
 
 	public func setMuteButtonMuted(_ isMuted: Bool) {
 		let icon = isMuted ? "speaker.slash.fill" : "speaker.wave.2.fill"
 		muteButton.setImage(UIImage(systemName: icon), for: .normal)
-		muteButton.accessibilityLabel = isMuted ? "Unmute" : "Mute"
+		muteButton.accessible(label: isMuted ? "Unmute" : "Mute", role: .button)
 	}
 
 	public func setFullscreenButtonExpanded(_ isExpanded: Bool) {
 		let icon = isExpanded ? "arrow.down.right.and.arrow.up.left" : "arrow.up.left.and.arrow.down.right"
 		fullscreenButton.setImage(UIImage(systemName: icon), for: .normal)
-		fullscreenButton.accessibilityLabel = isExpanded ? "Exit full screen" : "Enter full screen"
+		fullscreenButton.accessible(label: isExpanded ? "Exit full screen" : "Enter full screen", role: .button)
 	}
 
 	public func setSpeedButtonTitle(_ title: String) {
 		playbackSpeedButton.setTitle(title, for: .normal)
-		playbackSpeedButton.accessibilityValue = title
+		playbackSpeedButton.accessible(label: "Playback speed", value: title, role: .button)
 	}
 
 	public func updateTime(current: String, duration: String, progress: Float) {
 		currentTimeLabel.text = current
 		durationLabel.text = duration
 		progressSlider.value = progress
-		progressSlider.accessibilityValue = "\(current) of \(duration)"
+		progressSlider.accessible(label: "Playback position", value: "\(current) of \(duration)", role: .adjustable)
 	}
 
 	public func setTitle(_ title: String) {

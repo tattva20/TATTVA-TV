@@ -7,12 +7,13 @@
 import UIKit
 import StreamingCore
 import StreamingCoreiOS
+import StreamingCoreAccessibility
 
 @MainActor
 public final class VideosUIComposer {
     private init() {}
 
-    private typealias VideosPresentationAdapter = AsyncLoadResourcePresentationAdapter<Paginated<Video>, VideosViewAdapter>
+    private typealias VideosPresentationAdapter = AsyncLoadResourcePresentationAdapter<Paginated<Video>, AnnouncingResourceView<VideosViewAdapter>>
 
     public static func videosComposedWith(
         videoLoader: @MainActor @escaping () async throws -> Paginated<Video>,
@@ -25,10 +26,13 @@ public final class VideosUIComposer {
         videosController.onRefresh = presentationAdapter.loadResource
 
         presentationAdapter.presenter = LoadResourcePresenter(
-            resourceView: VideosViewAdapter(
-                controller: videosController,
-                imageLoader: imageLoader,
-                selection: selection),
+            resourceView: AnnouncingResourceView(
+                decoratee: VideosViewAdapter(
+                    controller: videosController,
+                    imageLoader: imageLoader,
+                    selection: selection),
+                announcer: UIKitAnnouncer(),
+                describe: { "\($0.items.count) videos" }),
             loadingView: WeakRefVirtualProxy(videosController),
             errorView: WeakRefVirtualProxy(videosController))
 

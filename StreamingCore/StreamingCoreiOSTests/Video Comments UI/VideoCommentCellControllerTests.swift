@@ -59,6 +59,17 @@ final class VideoCommentCellControllerTests: XCTestCase {
 		XCTAssertEqual(cell?.dateLabel.text, "2 days ago")
 	}
 
+	func test_cellForRowAtIndexPath_exposesCommentAsSingleAccessibilityElement() {
+		let model = makeViewModel(message: "Nice video", date: "2 days ago", username: "Jane")
+		let sut = makeSUT(model: model)
+		let tableView = makeTableView()
+
+		let cell = sut.tableView(tableView, cellForRowAt: IndexPath(row: 0, section: 0)) as? VideoCommentCell
+
+		XCTAssertEqual(cell?.isAccessibilityElement, true, "The comment cell should be a single VoiceOver element")
+		XCTAssertEqual(cell?.accessibilityLabel, "Jane. Nice video. 2 days ago")
+	}
+
 	// MARK: - Helpers
 
 	private func makeSUT(model: VideoCommentViewModel? = nil) -> VideoCommentCellController {

@@ -5,6 +5,8 @@
 //  Copyright by Octavio Rojas all rights reserved.
 //
 import UIKit
+import StreamingCore
+import StreamingCoreAccessibility
 
 public final class VideoCell: UITableViewCell {
 	private(set) public var titleLabel: UILabel!
@@ -44,6 +46,7 @@ public final class VideoCell: UITableViewCell {
 		videoImageRetryButton.setTitle("↻", for: .normal)
 		videoImageRetryButton.titleLabel?.font = .systemFont(ofSize: 60)
 		videoImageRetryButton.setTitleColor(.white, for: .normal)
+		videoImageRetryButton.accessible(label: "Retry", hint: "Reloads the video thumbnail", role: .button)
 		videoImageRetryButton.layer.shadowOffset = CGSize(width: 0, height: 1)
 		videoImageRetryButton.layer.shadowOpacity = 0.8
 		videoImageRetryButton.layer.shadowRadius = 2

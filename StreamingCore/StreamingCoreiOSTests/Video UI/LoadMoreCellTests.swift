@@ -52,6 +52,34 @@ class LoadMoreCellTests: XCTestCase {
         XCTAssertNil(sut.message, "Expected to hide message")
     }
 
+    func test_loading_announcesLoadingStateToVoiceOver() {
+        let sut = makeSUT()
+
+        sut.isLoading = true
+
+        XCTAssertTrue(sut.isAccessibilityElement, "Expected the loading cell to be a VoiceOver element")
+        XCTAssertEqual(sut.accessibilityLabel, "Loading more videos")
+    }
+
+    func test_errorMessage_exposesRetryButtonToVoiceOver() {
+        let sut = makeSUT()
+
+        sut.message = "Couldn't load more"
+
+        XCTAssertTrue(sut.isAccessibilityElement, "Expected the error cell to be a VoiceOver element")
+        XCTAssertEqual(sut.accessibilityLabel, "Couldn't load more")
+        XCTAssertTrue(sut.accessibilityTraits.contains(.button), "Expected the retryable cell to be a button")
+    }
+
+    func test_idle_isNotAVoiceOverElement() {
+        let sut = makeSUT()
+
+        sut.isLoading = true
+        sut.isLoading = false
+
+        XCTAssertFalse(sut.isAccessibilityElement, "Expected an idle load-more cell to be skipped by VoiceOver")
+    }
+
     // MARK: - Helpers
 
     private func makeSUT() -> LoadMoreCell {
