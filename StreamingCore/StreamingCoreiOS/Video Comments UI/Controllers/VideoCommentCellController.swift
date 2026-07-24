@@ -6,6 +6,7 @@
 //
 import UIKit
 import StreamingCore
+import StreamingCoreAccessibility
 
 public class VideoCommentCellController: NSObject, UITableViewDataSource {
 	private let model: VideoCommentViewModel
@@ -23,6 +24,9 @@ public class VideoCommentCellController: NSObject, UITableViewDataSource {
 		cell.messageLabel.text = model.message
 		cell.usernameLabel.text = model.username
 		cell.dateLabel.text = model.date
+		cell.accessible(
+			label: [model.username, model.message, model.date].joined(separator: ". "),
+			role: .staticText)
 		return cell
 	}
 }
