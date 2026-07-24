@@ -19,6 +19,8 @@
 		7DCB00000000000000000105 /* StreamingCorePlayback.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 7DCB00000000000000000101 /* StreamingCorePlayback.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		7DAC00000000000000000102 /* StreamingCoreAccessibility.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7DAC00000000000000000101 /* StreamingCoreAccessibility.framework */; };
 		7DAC00000000000000000103 /* StreamingCoreAccessibility.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 7DAC00000000000000000101 /* StreamingCoreAccessibility.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		7DAC00000000000000000104 /* StreamingCoreAccessibility.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7DAC00000000000000000101 /* StreamingCoreAccessibility.framework */; };
+		7DAC00000000000000000105 /* StreamingCoreAccessibility.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 7DAC00000000000000000101 /* StreamingCoreAccessibility.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -48,6 +50,7 @@
 				6E7F87C12EDE3A6B007B5AF8 /* StreamingCore.framework in Embed Frameworks */,
 				6E7F87C42EDE3A6B007B5AF8 /* StreamingCoreiOS.framework in Embed Frameworks */,
 				7DCB00000000000000000103 /* StreamingCorePlayback.framework in Embed Frameworks */,
+				7DAC00000000000000000105 /* StreamingCoreAccessibility.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -132,6 +135,7 @@
 				6E7F87C02EDE3A6B007B5AF8 /* StreamingCore.framework in Frameworks */,
 				6E7F87C32EDE3A6B007B5AF8 /* StreamingCoreiOS.framework in Frameworks */,
 				7DCB00000000000000000102 /* StreamingCorePlayback.framework in Frameworks */,
+				7DAC00000000000000000104 /* StreamingCoreAccessibility.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
