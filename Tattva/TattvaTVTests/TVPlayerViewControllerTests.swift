@@ -21,13 +21,13 @@ final class TVPlayerViewControllerTests: XCTestCase {
 		XCTAssertEqual(loadedURL, url, "Expected the embedded AVPlayerViewController's player to be loaded with the video's stream URL")
 	}
 
-	func test_viewDidLoad_withComments_presentsCommentsAsCustomInfoViewController() {
-		let comments = UIViewController()
-		let sut = TVPlayerViewController(video: makeVideo(url: anyURL()), comments: comments)
+	func test_viewDidLoad_withInfoViewController_presentsItAsCustomInfoPanel() {
+		let info = UIViewController()
+		let sut = TVPlayerViewController(video: makeVideo(url: anyURL()), infoViewController: info)
 
 		sut.loadViewIfNeeded()
 
-		XCTAssertTrue(sut.customInfoViewControllers.contains(comments), "Expected the comments controller to be shown as a custom info panel")
+		XCTAssertTrue(sut.customInfoViewControllers.contains(info), "Expected the info controller to be shown as a custom info panel")
 	}
 
 	func test_viewDidLoad_offersProfessionalPlaybackSpeeds() {

@@ -44,9 +44,8 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 	}
 
 	private func showPlayer(for video: Video) {
-		let comments = TVCommentsUIComposer.commentsComposedWith(
-			commentsLoader: videoService.loadComments(for: video))
-		let playerViewController = TVPlayerViewController(video: video, comments: comments)
+		let info = TVVideoInfoViewController(video: video)
+		let playerViewController = TVPlayerViewController(video: video, infoViewController: info)
 		navigationController.pushViewController(playerViewController, animated: true)
 	}
 }
