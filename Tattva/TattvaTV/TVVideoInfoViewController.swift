@@ -1,5 +1,6 @@
 import UIKit
 import StreamingCore
+import StreamingCoreAccessibility
 
 public final class TVVideoInfoViewController: UIViewController {
 	private let video: Video
@@ -50,6 +51,12 @@ public final class TVVideoInfoViewController: UIViewController {
 			stack.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 60),
 			stack.trailingAnchor.constraint(lessThanOrEqualTo: view.trailingAnchor, constant: -60)
 		])
+
+		let readOut = [titleLabel.text, durationLabel.text, descriptionLabel.text]
+			.compactMap { $0 }
+			.filter { !$0.isEmpty }
+			.joined(separator: ". ")
+		stack.accessible(label: readOut, role: .staticText)
 	}
 
 	static func formattedDuration(_ duration: TimeInterval) -> String? {

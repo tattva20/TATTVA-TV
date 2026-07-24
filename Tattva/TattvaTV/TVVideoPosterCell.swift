@@ -1,4 +1,6 @@
 import UIKit
+import StreamingCore
+import StreamingCoreAccessibility
 
 public final class TVVideoPosterCell: UICollectionViewCell {
 	static let reuseID = "TVVideoPosterCell"
@@ -15,7 +17,7 @@ public final class TVVideoPosterCell: UICollectionViewCell {
 
 	public func configure(title: String?) {
 		titleLabel.text = title
-		accessibilityLabel = title
+		accessible(label: title, role: .button)
 	}
 
 	@available(*, unavailable)
@@ -34,9 +36,6 @@ public final class TVVideoPosterCell: UICollectionViewCell {
 	}
 
 	private func configureViews() {
-		isAccessibilityElement = true
-		accessibilityTraits = .button
-
 		posterImageView.translatesAutoresizingMaskIntoConstraints = false
 		posterImageView.contentMode = .scaleAspectFill
 		posterImageView.clipsToBounds = true
