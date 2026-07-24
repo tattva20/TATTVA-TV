@@ -25,9 +25,14 @@ public final class TVCommentCell: UICollectionViewCell {
 		usernameLabel.text = viewModel.username
 		dateLabel.text = viewModel.date
 		messageLabel.text = viewModel.message
+		accessibilityLabel = [viewModel.username, viewModel.message, viewModel.date]
+			.filter { !$0.isEmpty }
+			.joined(separator: ". ")
 	}
 
 	private func configureViews() {
+		isAccessibilityElement = true
+
 		usernameLabel.font = .preferredFont(forTextStyle: .headline)
 		usernameLabel.textColor = .label
 		dateLabel.font = .preferredFont(forTextStyle: .caption1)

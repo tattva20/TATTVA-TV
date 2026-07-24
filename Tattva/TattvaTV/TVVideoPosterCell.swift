@@ -13,6 +13,11 @@ public final class TVVideoPosterCell: UICollectionViewCell {
 		configureViews()
 	}
 
+	public func configure(title: String?) {
+		titleLabel.text = title
+		accessibilityLabel = title
+	}
+
 	@available(*, unavailable)
 	required init?(coder: NSCoder) {
 		fatalError("init(coder:) has not been implemented")
@@ -29,6 +34,9 @@ public final class TVVideoPosterCell: UICollectionViewCell {
 	}
 
 	private func configureViews() {
+		isAccessibilityElement = true
+		accessibilityTraits = .button
+
 		posterImageView.translatesAutoresizingMaskIntoConstraints = false
 		posterImageView.contentMode = .scaleAspectFill
 		posterImageView.clipsToBounds = true
@@ -60,5 +68,6 @@ public final class TVVideoPosterCell: UICollectionViewCell {
 		super.prepareForReuse()
 		posterImageView.image = nil
 		titleLabel.text = nil
+		accessibilityLabel = nil
 	}
 }

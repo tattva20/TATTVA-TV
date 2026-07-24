@@ -28,7 +28,7 @@ extension TVVideoCellController: UICollectionViewDataSource, UICollectionViewDel
 
 	public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
 		let cell = collectionView.dequeueReusableCell(withReuseIdentifier: TVVideoPosterCell.reuseID, for: indexPath) as! TVVideoPosterCell
-		cell.titleLabel.text = viewModel.title
+		cell.configure(title: viewModel.title)
 		requestImage(into: cell)
 		return cell
 	}

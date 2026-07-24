@@ -46,6 +46,12 @@ final class TVCommentsViewControllerTests: XCTestCase {
 		XCTAssertNotEqual(sut.messageText(), "No comments yet", "Expected the error message, not the empty message")
 	}
 
+	func test_hasCommentsTitle_soTheInfoPanelTabReadsCommentsNotApplication() {
+		let sut = makeSUT(comments: [])
+
+		XCTAssertEqual(sut.title, "Comments")
+	}
+
 	// MARK: - Helpers
 
 	private func makeSUT(comments: [VideoComment]) -> TVCommentsViewController {
