@@ -15,6 +15,7 @@ public final class TVCommentsViewController: UICollectionViewController {
 
 	public init() {
 		super.init(collectionViewLayout: Self.makeLayout())
+		title = Self.tabTitle
 	}
 
 	@available(*, unavailable)
@@ -104,4 +105,5 @@ extension TVCommentsViewController: ResourceErrorView {
 
 private extension TVCommentsViewController {
 	static let emptyMessage = "No comments yet"
+	static let tabTitle = "Comments"
 }
