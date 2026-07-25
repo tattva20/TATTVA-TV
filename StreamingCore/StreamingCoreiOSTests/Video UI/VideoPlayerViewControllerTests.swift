@@ -96,8 +96,8 @@ class VideoPlayerViewControllerTests: XCTestCase {
 		sut.loadViewIfNeeded()
 		sut.simulateTimeUpdate()
 
-		XCTAssertEqual(sut.currentTimeLabel.text, "1:05")
-		XCTAssertEqual(sut.durationLabel.text, "1:01:01")
+		XCTAssertEqual(sut.controlsView.currentTimeLabel.text, "1:05")
+		XCTAssertEqual(sut.controlsView.durationLabel.text, "1:01:01")
 	}
 
 	func test_progressSlider_updatesWithCurrentTime() {
@@ -108,7 +108,7 @@ class VideoPlayerViewControllerTests: XCTestCase {
 		sut.loadViewIfNeeded()
 		sut.simulateTimeUpdate()
 
-		XCTAssertEqual(sut.progressSlider.value, 0.5, accuracy: 0.01)
+		XCTAssertEqual(sut.controlsView.progressSlider.value, 0.5, accuracy: 0.01)
 	}
 
 	func test_muteButtonTap_togglesMute() {
@@ -197,12 +197,12 @@ class VideoPlayerViewControllerTests: XCTestCase {
 
 		sut.loadViewIfNeeded()
 
-		XCTAssertEqual(sut.playButton.alpha, 1.0)
-		XCTAssertEqual(sut.seekForwardButton.alpha, 1.0)
-		XCTAssertEqual(sut.seekBackwardButton.alpha, 1.0)
-		XCTAssertEqual(sut.progressSlider.alpha, 1.0)
-		XCTAssertEqual(sut.currentTimeLabel.alpha, 1.0)
-		XCTAssertEqual(sut.durationLabel.alpha, 1.0)
+		XCTAssertEqual(sut.controlsView.playButton.alpha, 1.0)
+		XCTAssertEqual(sut.controlsView.seekForwardButton.alpha, 1.0)
+		XCTAssertEqual(sut.controlsView.seekBackwardButton.alpha, 1.0)
+		XCTAssertEqual(sut.controlsView.progressSlider.alpha, 1.0)
+		XCTAssertEqual(sut.controlsView.currentTimeLabel.alpha, 1.0)
+		XCTAssertEqual(sut.controlsView.durationLabel.alpha, 1.0)
 	}
 
 	func test_viewDidLoad_displaysPipButton() {
@@ -210,8 +210,8 @@ class VideoPlayerViewControllerTests: XCTestCase {
 
 		sut.loadViewIfNeeded()
 
-		XCTAssertNotNil(sut.pipButton)
-		XCTAssertNotNil(sut.pipButton.superview)
+		XCTAssertNotNil(sut.controlsView.pipButton)
+		XCTAssertNotNil(sut.controlsView.pipButton.superview)
 	}
 
 	func test_pipButton_hasCorrectIcon() {
@@ -220,7 +220,7 @@ class VideoPlayerViewControllerTests: XCTestCase {
 		sut.loadViewIfNeeded()
 
 		let expectedImage = UIImage(systemName: "pip.enter")
-		XCTAssertEqual(sut.pipButton.image(for: .normal), expectedImage)
+		XCTAssertEqual(sut.controlsView.pipButton.image(for: .normal), expectedImage)
 	}
 
 	func test_pipButton_hasWhiteTintColor() {
@@ -228,7 +228,7 @@ class VideoPlayerViewControllerTests: XCTestCase {
 
 		sut.loadViewIfNeeded()
 
-		XCTAssertEqual(sut.pipButton.tintColor, .white)
+		XCTAssertEqual(sut.controlsView.pipButton.tintColor, .white)
 	}
 
 	func test_pipButton_hasFullAlphaInitially() {
@@ -236,7 +236,7 @@ class VideoPlayerViewControllerTests: XCTestCase {
 
 		sut.loadViewIfNeeded()
 
-		XCTAssertEqual(sut.pipButton.alpha, 1.0)
+		XCTAssertEqual(sut.controlsView.pipButton.alpha, 1.0)
 	}
 
 	func test_hideControls_inPortrait_keepsPipButtonVisible() {
@@ -247,7 +247,7 @@ class VideoPlayerViewControllerTests: XCTestCase {
 		sut.simulateTapOnPlayerView()
 
 		// In portrait mode, bottom controls (pip, speed, fullscreen) remain visible
-		XCTAssertEqual(sut.pipButton.alpha, 1.0)
+		XCTAssertEqual(sut.controlsView.pipButton.alpha, 1.0)
 	}
 
 	func test_hideControls_inLandscape_setsPipButtonAlphaToZero() {
@@ -259,7 +259,7 @@ class VideoPlayerViewControllerTests: XCTestCase {
 		sut.simulateTapOnPlayerView()
 
 		// In landscape mode, ALL controls hide together including pip button
-		XCTAssertEqual(sut.pipButton.alpha, 0.0)
+		XCTAssertEqual(sut.controlsView.pipButton.alpha, 0.0)
 	}
 
 	func test_showControls_restoresPipButtonAlpha() {
@@ -269,7 +269,7 @@ class VideoPlayerViewControllerTests: XCTestCase {
 		sut.simulateTapOnPlayerView()
 		sut.simulateTapOnPlayerView()
 
-		XCTAssertEqual(sut.pipButton.alpha, 1.0)
+		XCTAssertEqual(sut.controlsView.pipButton.alpha, 1.0)
 	}
 
 	func test_pipButtonTap_callsToggleCallback() {
@@ -294,12 +294,12 @@ class VideoPlayerViewControllerTests: XCTestCase {
 		sut.loadViewIfNeeded()
 		sut.simulateTapOnPlayerView()
 
-		XCTAssertEqual(sut.playButton.alpha, 0.0)
-		XCTAssertEqual(sut.seekForwardButton.alpha, 0.0)
-		XCTAssertEqual(sut.seekBackwardButton.alpha, 0.0)
-		XCTAssertEqual(sut.progressSlider.alpha, 0.0)
-		XCTAssertEqual(sut.currentTimeLabel.alpha, 0.0)
-		XCTAssertEqual(sut.durationLabel.alpha, 0.0)
+		XCTAssertEqual(sut.controlsView.playButton.alpha, 0.0)
+		XCTAssertEqual(sut.controlsView.seekForwardButton.alpha, 0.0)
+		XCTAssertEqual(sut.controlsView.seekBackwardButton.alpha, 0.0)
+		XCTAssertEqual(sut.controlsView.progressSlider.alpha, 0.0)
+		XCTAssertEqual(sut.controlsView.currentTimeLabel.alpha, 0.0)
+		XCTAssertEqual(sut.controlsView.durationLabel.alpha, 0.0)
 	}
 
 	func test_showControls_restoresPlaybackControlsAlpha() {
@@ -309,12 +309,12 @@ class VideoPlayerViewControllerTests: XCTestCase {
 		sut.simulateTapOnPlayerView()
 		sut.simulateTapOnPlayerView()
 
-		XCTAssertEqual(sut.playButton.alpha, 1.0)
-		XCTAssertEqual(sut.seekForwardButton.alpha, 1.0)
-		XCTAssertEqual(sut.seekBackwardButton.alpha, 1.0)
-		XCTAssertEqual(sut.progressSlider.alpha, 1.0)
-		XCTAssertEqual(sut.currentTimeLabel.alpha, 1.0)
-		XCTAssertEqual(sut.durationLabel.alpha, 1.0)
+		XCTAssertEqual(sut.controlsView.playButton.alpha, 1.0)
+		XCTAssertEqual(sut.controlsView.seekForwardButton.alpha, 1.0)
+		XCTAssertEqual(sut.controlsView.seekBackwardButton.alpha, 1.0)
+		XCTAssertEqual(sut.controlsView.progressSlider.alpha, 1.0)
+		XCTAssertEqual(sut.controlsView.currentTimeLabel.alpha, 1.0)
+		XCTAssertEqual(sut.controlsView.durationLabel.alpha, 1.0)
 	}
 
 	// MARK: - Helpers
@@ -415,20 +415,20 @@ class VideoPlayerViewControllerTests: XCTestCase {
 
 private extension VideoPlayerViewController {
 	func simulatePlayButtonTap() {
-		playButton.simulate(event: .touchUpInside)
+		controlsView.playButton.simulate(event: .touchUpInside)
 	}
 
 	func simulateSeekForwardButtonTap() {
-		seekForwardButton.simulate(event: .touchUpInside)
+		controlsView.seekForwardButton.simulate(event: .touchUpInside)
 	}
 
 	func simulateSeekBackwardButtonTap() {
-		seekBackwardButton.simulate(event: .touchUpInside)
+		controlsView.seekBackwardButton.simulate(event: .touchUpInside)
 	}
 
 	func simulateProgressSliderValueChanged(to value: Float) {
-		progressSlider.value = value
-		progressSlider.simulate(event: .valueChanged)
+		controlsView.progressSlider.value = value
+		controlsView.progressSlider.simulate(event: .valueChanged)
 	}
 
 	func simulateTimeUpdate() {
@@ -436,24 +436,24 @@ private extension VideoPlayerViewController {
 	}
 
 	func simulateMuteButtonTap() {
-		muteButton.simulate(event: .touchUpInside)
+		controlsView.muteButton.simulate(event: .touchUpInside)
 	}
 
 	func simulateVolumeSliderValueChanged(to value: Float) {
-		volumeSlider.value = value
-		volumeSlider.simulate(event: .valueChanged)
+		controlsView.volumeSlider.value = value
+		controlsView.volumeSlider.simulate(event: .valueChanged)
 	}
 
 	func simulatePlaybackSpeedButtonTap() {
-		playbackSpeedButton.simulate(event: .touchUpInside)
+		controlsView.playbackSpeedButton.simulate(event: .touchUpInside)
 	}
 
 	func simulateFullscreenButtonTap() {
-		fullscreenButton.simulate(event: .touchUpInside)
+		controlsView.fullscreenButton.simulate(event: .touchUpInside)
 	}
 
 	func simulatePipButtonTap() {
-		pipButton.simulate(event: .touchUpInside)
+		controlsView.pipButton.simulate(event: .touchUpInside)
 	}
 
 	func simulateTapOnPlayerView() {
