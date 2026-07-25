@@ -46,6 +46,23 @@ final class AVPlayerPerformanceObserverTests: XCTestCase {
 		XCTAssertEqual(receivedStates.first, .idle)
 	}
 
+	func test_performanceEventPublisher_emitsPlaybackStalled_onNativeStallNotification() {
+		let item = AVPlayerItem(url: URL(string: "https://example.com/stream.m3u8")!)
+		let (sut, _) = makeSUT(player: AVPlayer(playerItem: item))
+		sut.startObserving()
+
+		var sawStalled = false
+		sut.performanceEventPublisher
+			.sink { event in
+				if case .playbackStalled = event { sawStalled = true }
+			}
+			.store(in: &cancellables)
+
+		NotificationCenter.default.post(name: AVPlayerItem.playbackStalledNotification, object: item)
+
+		XCTAssertTrue(sawStalled, "Expected the native stall notification to emit .playbackStalled")
+	}
+
 	// MARK: - Buffering State
 
 	func test_init_startsWithUnknownBufferingState() {

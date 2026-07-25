@@ -17,6 +17,7 @@ public final class PlaybackCoordinator {
 	private(set) var stateAdapter: AVPlayerStateAdapter?
 	private var performanceObserver: AVPlayerPerformanceObserver?
 	private var timeObserverToken: Any?
+	private var stallRecoveryToken: Any?
 
 	public var isObserving: Bool {
 		stateAdapter?.isObserving ?? false
@@ -54,12 +55,24 @@ public final class PlaybackCoordinator {
 		timeObserverToken = player.addPeriodicTimeObserver(forInterval: interval, queue: .main) { time in
 			MainActor.assumeIsolated { onTimeUpdate(time.seconds) }
 		}
+
+		stallRecoveryToken = NotificationCenter.default.addObserver(
+			forName: AVPlayerItem.playbackStalledNotification,
+			object: nil,
+			queue: .main
+		) { [weak self] _ in
+			MainActor.assumeIsolated { self?.player.play() }
+		}
 	}
 
 	public func stop() {
 		if let timeObserverToken {
 			player.removeTimeObserver(timeObserverToken)
 			self.timeObserverToken = nil
+		}
+		if let stallRecoveryToken {
+			NotificationCenter.default.removeObserver(stallRecoveryToken)
+			self.stallRecoveryToken = nil
 		}
 		stateAdapter?.stopObserving()
 		stateAdapter = nil
