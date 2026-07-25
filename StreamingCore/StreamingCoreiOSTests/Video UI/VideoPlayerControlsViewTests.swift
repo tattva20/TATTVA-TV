@@ -376,6 +376,46 @@ final class VideoPlayerControlsViewTests: XCTestCase {
 		XCTAssertFalse(sut.fullscreenButton.isUserInteractionEnabled)
 	}
 
+	// MARK: - Controls Visibility Animation Tests
+
+	func test_animateControlsHidden_landscape_hidesAllControlsAndDisablesInteraction() {
+		let sut = makeSUT()
+		sut.updateLayout(for: .landscape)
+
+		sut.animateControlsHidden(isLandscape: true)
+
+		XCTAssertEqual(sut.playButton.alpha, 0.0)
+		XCTAssertEqual(sut.pipButton.alpha, 0.0)
+		XCTAssertEqual(sut.fullscreenButton.alpha, 0.0)
+		XCTAssertFalse(sut.pipButton.isUserInteractionEnabled)
+		XCTAssertFalse(sut.fullscreenButton.isUserInteractionEnabled)
+	}
+
+	func test_animateControlsVisible_landscape_showsAllControlsAndEnablesInteraction() {
+		let sut = makeSUT()
+		sut.updateLayout(for: .landscape)
+		sut.animateControlsHidden(isLandscape: true)
+
+		sut.animateControlsVisible(isLandscape: true)
+
+		XCTAssertEqual(sut.playButton.alpha, 1.0)
+		XCTAssertEqual(sut.pipButton.alpha, 1.0)
+		XCTAssertEqual(sut.fullscreenButton.alpha, 1.0)
+		XCTAssertTrue(sut.pipButton.isUserInteractionEnabled)
+		XCTAssertTrue(sut.fullscreenButton.isUserInteractionEnabled)
+	}
+
+	func test_animateControlsHidden_portrait_hidesOverlayButKeepsBottomControls() {
+		let sut = makeSUT()
+		sut.updateLayout(for: .portrait)
+
+		sut.animateControlsHidden(isLandscape: false)
+
+		XCTAssertEqual(sut.playButton.alpha, 0.0)
+		XCTAssertEqual(sut.pipButton.alpha, 1.0)
+		XCTAssertEqual(sut.fullscreenButton.alpha, 1.0)
+	}
+
 	// MARK: - Helpers
 
 	func test_configureAccessibility_setsControlLabels() {

@@ -306,6 +306,26 @@ public final class VideoPlayerControlsView: UIView {
 		fullscreenButton.layer.removeAllAnimations()
 	}
 
+	// MARK: - Controls Visibility Animation
+
+	public func animateControlsVisible(isLandscape: Bool) {
+		if isLandscape {
+			setLandscapeControlsInteraction(enabled: true)
+		}
+		UIView.animate(withDuration: 0.3) { [weak self] in
+			self?.setControlsAlpha(1.0, isLandscape: isLandscape)
+		}
+	}
+
+	public func animateControlsHidden(isLandscape: Bool) {
+		if isLandscape {
+			setLandscapeControlsInteraction(enabled: false)
+		}
+		UIView.animate(withDuration: 0.3) { [weak self] in
+			self?.setControlsAlpha(0.0, isLandscape: isLandscape)
+		}
+	}
+
 	// MARK: - Actions
 
 	@objc private func playButtonTapped() {
