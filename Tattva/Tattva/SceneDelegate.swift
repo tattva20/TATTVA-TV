@@ -31,13 +31,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 				try store.deleteCachedVideos()
 			}
 		)
-		let imageCleaner = ImageCacheCleaner(
-			clearAction: {
-				return 0
-			}
-		)
 		return ResourceCleanupCoordinator(
-			cleaners: [videoCleaner, imageCleaner],
+			cleaners: [videoCleaner],
 			memoryMonitor: memoryMonitor
 		)
 	}()
