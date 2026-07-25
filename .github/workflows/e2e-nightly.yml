@@ -1,0 +1,44 @@
+name: E2E Nightly
+
+on:
+  schedule:
+    - cron: '0 8 * * *'
+  workflow_dispatch:
+
+jobs:
+  e2e:
+    name: Real-network E2E
+    runs-on: macos-26
+    timeout-minutes: 30
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Select Xcode
+      run: |
+        if [ -d "/Applications/Xcode_26.5.app" ]; then
+          sudo xcode-select -s /Applications/Xcode_26.5.app
+        else
+          sudo xcode-select -s /Applications/Xcode.app
+        fi
+        xcodebuild -version
+
+    - name: Run real-network E2E tests
+      run: |
+        set -o pipefail
+        xcodebuild test \
+          -workspace Tattva.xcworkspace \
+          -scheme CI_iOS \
+          -destination 'platform=iOS Simulator,name=iPhone 17,OS=26.5' \
+          -only-testing:StreamingCoreAPIEndToEndTests \
+          -resultBundlePath TestResults-E2E.xcresult \
+          CODE_SIGNING_ALLOWED=NO \
+          | xcpretty --color || true
+
+    - name: Upload Test Results
+      uses: actions/upload-artifact@v4
+      if: failure()
+      with:
+        name: e2e-test-results
+        path: TestResults-E2E.xcresult
