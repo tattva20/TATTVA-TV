@@ -74,6 +74,11 @@ public final class TVPlayerViewController: AVPlayerViewController {
 		playbackBundle?.statefulPlayer.play()
 	}
 
+	public override func viewWillDisappear(_ animated: Bool) {
+		super.viewWillDisappear(animated)
+		playbackBundle?.statefulPlayer.pause()
+	}
+
 	public override func viewDidDisappear(_ animated: Bool) {
 		super.viewDidDisappear(animated)
 		playbackBundle?.coordinator.stop()
