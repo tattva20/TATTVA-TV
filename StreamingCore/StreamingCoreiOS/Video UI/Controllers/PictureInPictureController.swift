@@ -50,6 +50,14 @@ public final class PictureInPictureController: NSObject, PictureInPictureControl
 	public func stopPictureInPicture() {
 		pipController?.stopPictureInPicture()
 	}
+
+	func restoreUserInterface(completion: @escaping (Bool) -> Void) {
+		if let onRestoreUserInterface {
+			onRestoreUserInterface(completion)
+		} else {
+			completion(true)
+		}
+	}
 }
 
 extension PictureInPictureController: AVPictureInPictureControllerDelegate {
@@ -74,10 +82,6 @@ extension PictureInPictureController: AVPictureInPictureControllerDelegate {
 	}
 
 	public func pictureInPictureController(_ pictureInPictureController: AVPictureInPictureController, restoreUserInterfaceForPictureInPictureStopWithCompletionHandler completionHandler: @escaping (Bool) -> Void) {
-		if let onRestoreUserInterface {
-			onRestoreUserInterface(completionHandler)
-		} else {
-			completionHandler(true)
-		}
+		restoreUserInterface(completion: completionHandler)
 	}
 }
