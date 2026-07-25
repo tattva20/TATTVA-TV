@@ -25,15 +25,26 @@ final class TVFeedLoaderPresentationAdapter {
 		self.selection = selection
 	}
 
+	static let loadErrorMessage = "Couldn't load videos. Please try again."
+
 	func loadFeed() {
 		guard !isLoading else { return }
 		isLoading = true
+		feedViewController?.display(errorMessage: nil)
+		feedViewController?.display(isLoading: true)
 		Task.immediate { @MainActor in
 			defer { self.isLoading = false }
-			guard let page = try? await self.videoLoader() else { return }
-			self.accumulatedVideos = page.items
-			self.loadMore = page.loadMore
-			self.display()
+			do {
+				let page = try await self.videoLoader()
+				self.accumulatedVideos = page.items
+				self.loadMore = page.loadMore
+				self.feedViewController?.display(isLoading: false)
+				self.display()
+			} catch {
+				self.feedViewController?.display(isLoading: false)
+				self.feedViewController?.display(errorMessage: Self.loadErrorMessage)
+				self.announcer?.announce(Self.loadErrorMessage)
+			}
 		}
 	}
 
@@ -42,10 +53,12 @@ final class TVFeedLoaderPresentationAdapter {
 		isLoading = true
 		Task.immediate { @MainActor in
 			defer { self.isLoading = false }
-			guard let page = try? await loadMore() else { return }
-			self.accumulatedVideos += page.items
-			self.loadMore = page.loadMore
-			self.display()
+			do {
+				let page = try await loadMore()
+				self.accumulatedVideos += page.items
+				self.loadMore = page.loadMore
+				self.display()
+			} catch {}
 		}
 	}
 
