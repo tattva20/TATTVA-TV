@@ -136,6 +136,7 @@ public final class VideoPlayerControlsView: UIView {
 
 	public private(set) lazy var bottomControlsContainer: UIView = {
 		let view = UIView()
+		view.tag = 998
 		view.translatesAutoresizingMaskIntoConstraints = false
 		return view
 	}()
