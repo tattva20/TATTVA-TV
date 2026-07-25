@@ -119,6 +119,24 @@ extension VideoPlayerViewController {
 	}
 }
 
+private nonisolated(unsafe) var memoryPerformanceCancellableKey: UInt8 = 0
+
+extension VideoPlayerViewController {
+	var memoryPerformanceCancellable: AnyCancellable? {
+		get {
+			objc_getAssociatedObject(self, &memoryPerformanceCancellableKey) as? AnyCancellable
+		}
+		set {
+			objc_setAssociatedObject(
+				self,
+				&memoryPerformanceCancellableKey,
+				newValue,
+				.OBJC_ASSOCIATION_RETAIN_NONATOMIC
+			)
+		}
+	}
+}
+
 @MainActor
 public enum VideoPlayerUIComposer {
 	public static func videoPlayerComposedWith(
@@ -127,7 +145,8 @@ public enum VideoPlayerUIComposer {
 		commentsController: UIViewController? = nil,
 		analyticsLogger: PlaybackAnalyticsLogger? = nil,
 		structuredLogger: (any StreamingCore.Logger)? = nil,
-		bufferManager: (any BufferManager)? = nil
+		bufferManager: (any BufferManager)? = nil,
+		memoryStatePublisher: AnyPublisher<MemoryState, Never>? = nil
 	) -> VideoPlayerViewController {
 		let viewModel = VideoPlayerPresenter.map(video)
 		let basePlayer = player ?? AVPlayerVideoPlayer()
@@ -167,6 +186,16 @@ public enum VideoPlayerUIComposer {
 				alerts: performanceService.alertPublisher,
 				logger: structuredLogger
 			)
+		}
+
+		if let memoryStatePublisher {
+			controller.memoryPerformanceCancellable = memoryStatePublisher
+				.receive(on: RunLoop.main)
+				.sink { [weak performanceAdapter] state in
+					performanceAdapter?.updateMemory(
+						usedMB: state.usedMB,
+						pressure: state.pressureLevel(thresholds: .default))
+				}
 		}
 
 		if let commentsController = commentsController {

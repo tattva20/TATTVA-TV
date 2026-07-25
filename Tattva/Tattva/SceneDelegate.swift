@@ -153,7 +153,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 			commentsController: commentsController,
 			analyticsLogger: analyticsLogger,
 			structuredLogger: structuredLogger,
-			bufferManager: bufferManager)
+			bufferManager: bufferManager,
+				memoryStatePublisher: memoryMonitor.statePublisher)
 		navigationController.pushViewController(videoPlayerController, animated: true)
 	}
 }
