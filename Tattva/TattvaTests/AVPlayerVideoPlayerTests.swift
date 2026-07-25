@@ -25,6 +25,12 @@ final class AVPlayerVideoPlayerTests: XCTestCase {
 		XCTAssertTrue(sut.currentTime.isFinite)
 	}
 
+	func test_init_setsAutomaticallyWaitsToMinimizeStalling() {
+		let sut = AVPlayerVideoPlayer()
+
+		XCTAssertTrue(sut.player.automaticallyWaitsToMinimizeStalling, "Expected deliberate stall-avoidance rather than the silently-inherited default")
+	}
+
 	// MARK: - Helpers
 
 	private func anyURL() -> URL {
