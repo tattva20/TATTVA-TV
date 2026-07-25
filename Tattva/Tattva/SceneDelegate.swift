@@ -142,7 +142,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 			player: player,
 			commentsController: commentsController,
 			analyticsLogger: analyticsLogger,
-			structuredLogger: structuredLogger)
+			structuredLogger: structuredLogger,
+			bufferManager: bufferManager)
 		navigationController.pushViewController(videoPlayerController, animated: true)
 	}
 }
