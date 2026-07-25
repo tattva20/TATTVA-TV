@@ -44,7 +44,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 	}()
 
 	private lazy var analyticsStore: AnalyticsStore = {
-		InMemoryAnalyticsStore()
+		LoggingAnalyticsStore(decoratee: InMemoryAnalyticsStore(), logger: structuredLogger)
 	}()
 
 	private lazy var analyticsLogger: PlaybackAnalyticsLogger = {
