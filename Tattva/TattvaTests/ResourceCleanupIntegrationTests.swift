@@ -119,8 +119,7 @@ final class ResourceCleanupIntegrationTests: XCTestCase {
 		let normalState = makeMemoryState(availableMB: 500) // Plenty of memory
 		memoryMonitor.simulateMemoryState(normalState)
 
-		// Give some time for potential cleanup
-		try? await Task.sleep(nanoseconds: 100_000_000)
+		for _ in 0..<20 { await Task.yield() }
 
 		XCTAssertEqual(cleaner.cleanupCallCount, 0, "Expected no cleanup on normal memory pressure")
 	}

@@ -158,8 +158,7 @@ final class AnalyticsVideoPlayerDecoratorTests: XCTestCase {
 		let sut = makeSUT(logger: logger)
 
 		sut.play()
-		await Task.yield()
-		try? await Task.sleep(nanoseconds: 100_000_000)
+		await poll(until: { logger.loggedEvents.count == 1 })
 
 		let events = logger.loggedEvents
 		XCTAssertEqual(events.count, 1)
@@ -173,8 +172,7 @@ final class AnalyticsVideoPlayerDecoratorTests: XCTestCase {
 		sut.play()
 		sut.pause()
 		sut.play()
-		await Task.yield()
-		try? await Task.sleep(nanoseconds: 200_000_000)
+		await poll(until: { logger.loggedEvents.count == 3 })
 
 		let types = logger.loggedEvents.map(\.type)
 		XCTAssertEqual(types, [.play, .pause, .play])
@@ -187,8 +185,7 @@ final class AnalyticsVideoPlayerDecoratorTests: XCTestCase {
 		decoratee.isPlaying = true
 
 		sut.pause()
-		await Task.yield()
-		try? await Task.sleep(nanoseconds: 100_000_000)
+		await poll(until: { logger.loggedEvents.count == 1 })
 
 		let events = logger.loggedEvents
 		XCTAssertEqual(events.count, 1)
@@ -202,8 +199,7 @@ final class AnalyticsVideoPlayerDecoratorTests: XCTestCase {
 		decoratee.currentTime = 10.0
 
 		sut.seek(to: 50.0)
-		await Task.yield()
-		try? await Task.sleep(nanoseconds: 100_000_000)
+		await poll(until: { logger.loggedEvents.count == 1 })
 
 		let events = logger.loggedEvents
 		XCTAssertEqual(events.count, 1)
@@ -222,8 +218,7 @@ final class AnalyticsVideoPlayerDecoratorTests: XCTestCase {
 		decoratee.playbackSpeed = 1.0
 
 		sut.setPlaybackSpeed(2.0)
-		await Task.yield()
-		try? await Task.sleep(nanoseconds: 100_000_000)
+		await poll(until: { logger.loggedEvents.count == 1 })
 
 		let events = logger.loggedEvents
 		XCTAssertEqual(events.count, 1)
@@ -242,8 +237,7 @@ final class AnalyticsVideoPlayerDecoratorTests: XCTestCase {
 		decoratee.volume = 0.5
 
 		sut.setVolume(1.0)
-		await Task.yield()
-		try? await Task.sleep(nanoseconds: 100_000_000)
+		await poll(until: { logger.loggedEvents.count == 1 })
 
 		let events = logger.loggedEvents
 		XCTAssertEqual(events.count, 1)
@@ -262,8 +256,7 @@ final class AnalyticsVideoPlayerDecoratorTests: XCTestCase {
 		decoratee.isMuted = false
 
 		sut.toggleMute()
-		await Task.yield()
-		try? await Task.sleep(nanoseconds: 100_000_000)
+		await poll(until: { logger.loggedEvents.count == 1 })
 
 		let events = logger.loggedEvents
 		XCTAssertEqual(events.count, 1)
@@ -275,6 +268,19 @@ final class AnalyticsVideoPlayerDecoratorTests: XCTestCase {
 	}
 
 	// MARK: - Helpers
+
+	@discardableResult
+	private func poll(
+		until condition: @MainActor () -> Bool,
+		timeout: TimeInterval = 1
+	) async -> Bool {
+		let deadline = Date() + timeout
+		while Date() < deadline {
+			if condition() { return true }
+			await Task.yield()
+		}
+		return condition()
+	}
 
 	private func makeSUT(
 		decoratee: VideoPlayerSpy? = nil,
