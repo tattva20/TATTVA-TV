@@ -5,6 +5,7 @@
 //  Copyright by Octavio Rojas all rights reserved.
 //
 import UIKit
+import Combine
 import StreamingCore
 import StreamingCoreiOS
 import StreamingCorePlayback
@@ -78,6 +79,39 @@ extension VideoPlayerViewController {
 			objc_setAssociatedObject(
 				self,
 				&bufferAdapterKey,
+				newValue,
+				.OBJC_ASSOCIATION_RETAIN_NONATOMIC
+			)
+		}
+	}
+}
+
+final class NetworkBitrateBinding {
+	private let monitor: NetworkQualityMonitor
+	private let cancellable: AnyCancellable
+
+	init(monitor: NetworkQualityMonitor, cancellable: AnyCancellable) {
+		self.monitor = monitor
+		self.cancellable = cancellable
+	}
+
+	deinit {
+		let monitor = self.monitor
+		Task { await monitor.stopMonitoring() }
+	}
+}
+
+private nonisolated(unsafe) var networkBitrateBindingKey: UInt8 = 0
+
+extension VideoPlayerViewController {
+	var networkBitrateBinding: NetworkBitrateBinding? {
+		get {
+			objc_getAssociatedObject(self, &networkBitrateBindingKey) as? NetworkBitrateBinding
+		}
+		set {
+			objc_setAssociatedObject(
+				self,
+				&networkBitrateBindingKey,
 				newValue,
 				.OBJC_ASSOCIATION_RETAIN_NONATOMIC
 			)
@@ -179,6 +213,19 @@ public enum VideoPlayerUIComposer {
 					bufferManager: bufferManager
 				)
 			}
+
+			let networkMonitor = NetworkQualityMonitor()
+			let bitratePolicy = NetworkBitratePolicy()
+			let bitrateCancellable = networkMonitor.qualityPublisher
+				.receive(on: RunLoop.main)
+				.sink { [weak coordinator] quality in
+					coordinator?.setPreferredPeakBitRate(bitratePolicy.peakBitRate(for: quality))
+				}
+			Task { await networkMonitor.startMonitoring() }
+			controller.networkBitrateBinding = NetworkBitrateBinding(
+				monitor: networkMonitor,
+				cancellable: bitrateCancellable
+			)
 		}
 
 		let pipController = PictureInPictureController()

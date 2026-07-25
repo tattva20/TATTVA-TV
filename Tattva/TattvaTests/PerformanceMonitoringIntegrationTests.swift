@@ -56,6 +56,14 @@ final class PerformanceMonitoringIntegrationTests: XCTestCase {
 		XCTAssertNil(controller.bufferAdapter, "Expected no buffer adapter when no buffer manager is provided")
 	}
 
+	func test_videoPlayerComposedWith_wiresNetworkBitrateBinding() {
+		let video = makeVideo()
+
+		let controller = VideoPlayerUIComposer.videoPlayerComposedWith(video: video)
+
+		XCTAssertNotNil(controller.networkBitrateBinding, "Expected a network-driven bitrate binding wired after composition")
+	}
+
 	func test_performanceAdapter_stopsMonitoringWhenControllerDeallocates() async {
 		let video = makeVideo()
 		weak var weakAdapter: VideoPlayerPerformanceAdapter?

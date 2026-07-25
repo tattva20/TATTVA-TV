@@ -182,6 +182,15 @@ public final class AVPlayerPerformanceObserver: @unchecked Sendable {
 		}
 		itemNotificationTokens.append(accessLogToken)
 
+		let stalledToken = NotificationCenter.default.addObserver(
+			forName: AVPlayerItem.playbackStalledNotification,
+			object: item,
+			queue: .main
+		) { [weak self] _ in
+			self?.performanceEventSubject.send(.playbackStalled)
+		}
+		itemNotificationTokens.append(stalledToken)
+
 		// Emit load started
 		performanceEventSubject.send(.loadStarted)
 	}
@@ -218,10 +227,6 @@ public final class AVPlayerPerformanceObserver: @unchecked Sendable {
 			}
 		} else {
 			newState = .stalled
-
-			if bufferingStartTime == nil {
-				performanceEventSubject.send(.playbackStalled)
-			}
 		}
 
 		bufferingStateSubject.send(newState)
