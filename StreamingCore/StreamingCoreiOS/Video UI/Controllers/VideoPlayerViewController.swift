@@ -62,9 +62,8 @@ public final class VideoPlayerViewController: UIViewController {
 
 	// MARK: - Comments
 
-	private var commentsContainer: UIView?
 	public private(set) var embeddedCommentsController: UIViewController?
-	private var commentsContainerConstraints: [NSLayoutConstraint] = []
+	private let commentsEmbedding = CommentsEmbeddingController()
 
 	// MARK: - Initialization
 
@@ -223,35 +222,8 @@ public final class VideoPlayerViewController: UIViewController {
 	}
 
 	private func embedCommentsController(_ controller: UIViewController) {
-		guard commentsContainer == nil else { return }
-
-		let containerView = UIView()
-		containerView.translatesAutoresizingMaskIntoConstraints = false
-		containerView.backgroundColor = .systemBackground
-		containerView.tag = 999
-		view.addSubview(containerView)
-		commentsContainer = containerView
-
-		addChild(controller)
-		controller.view.translatesAutoresizingMaskIntoConstraints = false
-		containerView.addSubview(controller.view)
-		controller.didMove(toParent: self)
-
-		commentsContainerConstraints = [
-			containerView.topAnchor.constraint(equalTo: controlsView.bottomControlsContainer.bottomAnchor, constant: 16),
-			containerView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-			containerView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-			containerView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
-			controller.view.topAnchor.constraint(equalTo: containerView.topAnchor),
-			controller.view.leadingAnchor.constraint(equalTo: containerView.leadingAnchor),
-			controller.view.trailingAnchor.constraint(equalTo: containerView.trailingAnchor),
-			controller.view.bottomAnchor.constraint(equalTo: containerView.bottomAnchor)
-		]
-
-		if !isLandscape {
-			NSLayoutConstraint.activate(commentsContainerConstraints)
-		}
-
+		guard !commentsEmbedding.isEmbedded else { return }
+		commentsEmbedding.embed(controller, in: self, below: controlsView.bottomControlsContainer, isLandscape: isLandscape)
 		updateLayoutForOrientation(isLandscape: isLandscape)
 	}
 
@@ -268,11 +240,10 @@ public final class VideoPlayerViewController: UIViewController {
 		controlsView.setFullscreenButtonExpanded(isFullscreen)
 
 		layoutController.apply(isLandscape: isLandscape)
+		commentsEmbedding.setVisible(!isLandscape)
 
 		if isLandscape {
-			NSLayoutConstraint.deactivate(commentsContainerConstraints)
 			controlsView.updateLayout(for: .landscape)
-			commentsContainer?.isHidden = true
 			navigationController?.setNavigationBarHidden(true, animated: true)
 
 			if !areControlsVisible {
@@ -280,9 +251,7 @@ public final class VideoPlayerViewController: UIViewController {
 				controlsView.setLandscapeControlsInteraction(enabled: false)
 			}
 		} else {
-			NSLayoutConstraint.activate(commentsContainerConstraints)
 			controlsView.updateLayout(for: .portrait)
-			commentsContainer?.isHidden = false
 			navigationController?.setNavigationBarHidden(false, animated: true)
 		}
 
