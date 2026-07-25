@@ -33,8 +33,19 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 	private lazy var structuredLogger: any StreamingCore.Logger =
 		LoggingConfiguration.makeLogger(subsystem: "com.octavio.rojas.TattvaTV")
 
-	private lazy var analyticsStore: AnalyticsStore =
-		LoggingAnalyticsStore(decoratee: InMemoryAnalyticsStore(), logger: structuredLogger)
+	private lazy var analyticsStore: AnalyticsStore = {
+		let persistent: AnalyticsStore
+		do {
+			persistent = try CoreDataAnalyticsStore(
+				storeURL: NSPersistentContainer
+					.defaultDirectoryURL()
+					.appendingPathComponent("analytics-store.sqlite"))
+		} catch {
+			assertionFailure("Failed to instantiate CoreData analytics store: \(error.localizedDescription)")
+			persistent = InMemoryAnalyticsStore()
+		}
+		return LoggingAnalyticsStore(decoratee: persistent, logger: structuredLogger)
+	}()
 
 	private lazy var analyticsLogger: PlaybackAnalyticsLogger =
 		PlaybackAnalyticsService(store: analyticsStore)
