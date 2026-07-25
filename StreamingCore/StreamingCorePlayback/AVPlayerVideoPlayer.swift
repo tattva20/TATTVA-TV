@@ -33,6 +33,7 @@ public final class AVPlayerVideoPlayer: VideoPlayer {
 
 	public init(player: AVPlayer = AVPlayer()) {
 		self.player = player
+		player.automaticallyWaitsToMinimizeStalling = true
 	}
 
 	public func load(url: URL) {

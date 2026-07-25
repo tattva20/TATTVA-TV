@@ -38,6 +38,24 @@ final class PerformanceMonitoringIntegrationTests: XCTestCase {
 		XCTAssertTrue(controller.performanceAdapter?.isObserving == true, "Expected performance monitoring to be started after composition")
 	}
 
+	func test_videoPlayerComposedWith_wiresBufferAdapter_whenBufferManagerProvided() {
+		let video = makeVideo()
+
+		let controller = VideoPlayerUIComposer.videoPlayerComposedWith(
+			video: video,
+			bufferManager: AdaptiveBufferManager())
+
+		XCTAssertNotNil(controller.bufferAdapter, "Expected a buffer adapter wired to the player when a buffer manager is provided")
+	}
+
+	func test_videoPlayerComposedWith_omitsBufferAdapter_whenNoBufferManager() {
+		let video = makeVideo()
+
+		let controller = VideoPlayerUIComposer.videoPlayerComposedWith(video: video)
+
+		XCTAssertNil(controller.bufferAdapter, "Expected no buffer adapter when no buffer manager is provided")
+	}
+
 	func test_performanceAdapter_stopsMonitoringWhenControllerDeallocates() async {
 		let video = makeVideo()
 		weak var weakAdapter: VideoPlayerPerformanceAdapter?

@@ -6,6 +6,7 @@
 //
 import os
 import UIKit
+import Combine
 import CoreData
 import StreamingCore
 import StreamingCoreiOS
@@ -16,6 +17,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
 	private var videoPlayerFactory: ((Video) -> VideoPlayer)?
 	private var _isAutoCleanupEnabled = false
+	private var bufferManagerBinding: AnyCancellable?
 
 	// MARK: - Public Properties for Testing
 
@@ -110,6 +112,14 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 		window?.rootViewController = navigationController
 		window?.makeKeyAndVisible()
 		enableAutoCleanup()
+		bindBufferManagerToMemory()
+	}
+
+	private func bindBufferManagerToMemory() {
+		bufferManagerBinding = memoryMonitor.statePublisher
+			.sink { [bufferManager] state in
+				bufferManager.updateMemoryState(state)
+			}
 	}
 
 	private func enableAutoCleanup() {
@@ -132,7 +142,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 			player: player,
 			commentsController: commentsController,
 			analyticsLogger: analyticsLogger,
-			structuredLogger: structuredLogger)
+			structuredLogger: structuredLogger,
+			bufferManager: bufferManager)
 		navigationController.pushViewController(videoPlayerController, animated: true)
 	}
 }

@@ -67,6 +67,24 @@ extension VideoPlayerViewController {
 	}
 }
 
+private nonisolated(unsafe) var bufferAdapterKey: UInt8 = 0
+
+extension VideoPlayerViewController {
+	var bufferAdapter: AVPlayerBufferAdapterConcrete? {
+		get {
+			objc_getAssociatedObject(self, &bufferAdapterKey) as? AVPlayerBufferAdapterConcrete
+		}
+		set {
+			objc_setAssociatedObject(
+				self,
+				&bufferAdapterKey,
+				newValue,
+				.OBJC_ASSOCIATION_RETAIN_NONATOMIC
+			)
+		}
+	}
+}
+
 @MainActor
 public enum VideoPlayerUIComposer {
 	public static func videoPlayerComposedWith(
@@ -74,7 +92,8 @@ public enum VideoPlayerUIComposer {
 		player: VideoPlayer? = nil,
 		commentsController: UIViewController? = nil,
 		analyticsLogger: PlaybackAnalyticsLogger? = nil,
-		structuredLogger: (any StreamingCore.Logger)? = nil
+		structuredLogger: (any StreamingCore.Logger)? = nil,
+		bufferManager: (any BufferManager)? = nil
 	) -> VideoPlayerViewController {
 		let viewModel = VideoPlayerPresenter.map(video)
 		let basePlayer = player ?? AVPlayerVideoPlayer()
@@ -153,6 +172,13 @@ public enum VideoPlayerUIComposer {
 			)
 			coordinator.start()
 			controller.playbackCoordinator = coordinator
+
+			if let bufferManager = bufferManager {
+				controller.bufferAdapter = AVPlayerBufferAdapter(
+					player: avPlayer.player,
+					bufferManager: bufferManager
+				)
+			}
 		}
 
 		let pipController = PictureInPictureController()
