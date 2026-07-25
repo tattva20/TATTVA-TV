@@ -30,6 +30,15 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 	private lazy var bufferManager: AdaptiveBufferManager = AdaptiveBufferManager()
 	private var bufferManagerBinding: AnyCancellable?
 
+	private lazy var structuredLogger: any StreamingCore.Logger =
+		LoggingConfiguration.makeLogger(subsystem: "com.octavio.rojas.TattvaTV")
+
+	private lazy var analyticsStore: AnalyticsStore =
+		LoggingAnalyticsStore(decoratee: InMemoryAnalyticsStore(), logger: structuredLogger)
+
+	private lazy var analyticsLogger: PlaybackAnalyticsLogger =
+		PlaybackAnalyticsService(store: analyticsStore)
+
 	private lazy var navigationController = UINavigationController(
 		rootViewController: TVVideosUIComposer.feedComposedWith(
 			videoLoader: videoService.loadRemoteVideosWithLocalFallback,
@@ -62,6 +71,8 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 		let playerViewController = TVPlayerViewController(
 			video: video,
 			infoViewController: info,
+			analyticsLogger: analyticsLogger,
+			structuredLogger: structuredLogger,
 			bufferManager: bufferManager)
 		navigationController.pushViewController(playerViewController, animated: true)
 	}

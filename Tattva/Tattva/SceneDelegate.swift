@@ -52,7 +52,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 	}()
 
 	private lazy var structuredLogger: any StreamingCore.Logger = {
-		LoggingConfiguration.makeLogger()
+		LoggingConfiguration.makeLogger(subsystem: "com.tattva.Tattva")
 	}()
 
 	private lazy var httpClient: HTTPClient = {

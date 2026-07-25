@@ -6,8 +6,7 @@
 //
 
 import XCTest
-import StreamingCore
-@testable import StreamingCoreiOS
+@testable import StreamingCore
 
 final class OSLogLoggerTests: XCTestCase {
 
