@@ -92,18 +92,6 @@ final class LoadResourcePresentationAdapterTests: XCTestCase {
 		return sut
 	}
 
-	@discardableResult
-	private func poll(
-		until condition: @MainActor () -> Bool,
-		timeout: TimeInterval = 1
-	) async -> Bool {
-		let deadline = Date() + timeout
-		while Date() < deadline {
-			if condition() { return true }
-			await Task.yield()
-		}
-		return condition()
-	}
 
 	private func makeHangingLoader(loadHandler: @escaping () -> Void = {}) -> () async throws -> String {
 		return {
