@@ -154,7 +154,8 @@ class VideoPlayerUIIntegrationTests: XCTestCase {
 
 		sut.simulateLandscapeOrientation()
 
-		XCTAssertTrue(sut.bottomControlsContainerView?.isHidden ?? true, "Expected bottom controls container to be hidden in landscape")
+		XCTAssertNotNil(sut.bottomControlsContainerView, "Expected to locate the bottom controls container")
+		XCTAssertTrue(sut.bottomControlsContainerView?.isHidden ?? false, "Expected bottom controls container to be hidden in landscape")
 	}
 
 	func test_videoPlayerView_showsTitleLabelInLandscape() {
