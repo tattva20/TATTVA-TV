@@ -50,7 +50,46 @@ final class TVPlayerComposerTests: XCTestCase {
 		_ = bundle
 	}
 
+	func test_playerComposedWith_appliesLoggingDecorator_whenStructuredLoggerProvided() async {
+		let logger = LoggerSpy()
+
+		let bundle = TVPlayerComposer.playerComposedWith(video: makeVideo(), structuredLogger: logger)
+		bundle.statefulPlayer.play()
+
+		await poll(until: { !logger.loggedMessages.isEmpty })
+		XCTAssertFalse(
+			logger.loggedMessages.isEmpty,
+			"Expected the composed tvOS player to log through the injected logging decorator")
+	}
+
 	// MARK: - Helpers
+
+	@discardableResult
+	private func poll(until condition: @MainActor () -> Bool, timeout: TimeInterval = 1) async -> Bool {
+		let deadline = Date() + timeout
+		while Date() < deadline {
+			if condition() { return true }
+			await Task.yield()
+		}
+		return condition()
+	}
+
+	private final class LoggerSpy: Logger, @unchecked Sendable {
+		let minimumLevel: LogLevel = .debug
+
+		private let lock = NSLock()
+		private var _entries: [LogEntry] = []
+
+		var loggedMessages: [String] {
+			lock.lock(); defer { lock.unlock() }
+			return _entries.map(\.message)
+		}
+
+		func log(_ entry: LogEntry) {
+			lock.lock(); defer { lock.unlock() }
+			_entries.append(entry)
+		}
+	}
 
 	@MainActor
 	private final class BufferManagerSpy: BufferManager {
