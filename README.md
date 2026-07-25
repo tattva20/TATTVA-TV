@@ -18,6 +18,10 @@
   A portfolio-grade <strong>iOS and tvOS</strong> video streaming application built with <strong>Test-Driven Development (TDD)</strong>, <strong>SOLID principles</strong>, and <strong>Clean Architecture</strong>.
 </p>
 
+<p align="center">
+  <img src="docs/images/demo.gif" alt="TATTVA TV on Apple TV — browsing the feed and starting playback" width="760">
+</p>
+
 ---
 
 ## Documentation
