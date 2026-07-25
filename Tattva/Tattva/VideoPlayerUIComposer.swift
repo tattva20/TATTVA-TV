@@ -162,6 +162,13 @@ public enum VideoPlayerUIComposer {
 		performanceAdapter.startMonitoring(sessionID: UUID())
 		controller.performanceAdapter = performanceAdapter
 
+		if let structuredLogger {
+			controller.performanceAlertLogging = PerformanceAlertLoggingBinding(
+				alerts: performanceService.alertPublisher,
+				logger: structuredLogger
+			)
+		}
+
 		if let commentsController = commentsController {
 			controller.setCommentsController(commentsController)
 		}
