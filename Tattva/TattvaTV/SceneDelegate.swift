@@ -1,5 +1,6 @@
 import os
 import UIKit
+import Combine
 import CoreData
 import StreamingCore
 import StreamingCorePlayback
@@ -25,6 +26,10 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
 	private lazy var videoService = VideoService(httpClient: httpClient, store: store, logger: logger)
 
+	private lazy var memoryMonitor: PollingMemoryMonitor = MemoryMonitorFactory.makeSystemMemoryMonitor()
+	private lazy var bufferManager: AdaptiveBufferManager = AdaptiveBufferManager()
+	private var bufferManagerBinding: AnyCancellable?
+
 	private lazy var navigationController = UINavigationController(
 		rootViewController: TVVideosUIComposer.feedComposedWith(
 			videoLoader: videoService.loadRemoteVideosWithLocalFallback,
@@ -41,11 +46,23 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 		window.rootViewController = navigationController
 		self.window = window
 		window.makeKeyAndVisible()
+		startBufferManagement()
+	}
+
+	private func startBufferManagement() {
+		memoryMonitor.startMonitoring()
+		bufferManagerBinding = memoryMonitor.statePublisher
+			.sink { [bufferManager] state in
+				bufferManager.updateMemoryState(state)
+			}
 	}
 
 	private func showPlayer(for video: Video) {
 		let info = TVVideoInfoViewController(video: video)
-		let playerViewController = TVPlayerViewController(video: video, infoViewController: info)
+		let playerViewController = TVPlayerViewController(
+			video: video,
+			infoViewController: info,
+			bufferManager: bufferManager)
 		navigationController.pushViewController(playerViewController, animated: true)
 	}
 }

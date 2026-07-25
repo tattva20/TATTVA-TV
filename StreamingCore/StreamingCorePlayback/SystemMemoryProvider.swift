@@ -1,6 +1,6 @@
 //
 //  SystemMemoryProvider.swift
-//  Tattva
+//  StreamingCorePlayback
 //
 //  Copyright by Octavio Rojas. All rights reserved.
 //
@@ -9,13 +9,17 @@ import Foundation
 import os
 import StreamingCore
 
-/// Provides actual system memory state using iOS system APIs
+/// Provides actual system memory state using cross-platform system memory APIs
 public enum SystemMemoryProvider {
 	/// Returns the current memory state from the operating system
 	/// This is a pure computation that can be safely called from any context
 	public static let memoryReader: @Sendable () -> MemoryState = {
-		let availableBytes = UInt64(os_proc_available_memory())
 		let totalBytes = ProcessInfo.processInfo.physicalMemory
+		#if os(macOS)
+		let availableBytes = totalBytes
+		#else
+		let availableBytes = UInt64(os_proc_available_memory())
+		#endif
 		let usedBytes = totalBytes > availableBytes ? totalBytes - availableBytes : 0
 
 		return MemoryState(

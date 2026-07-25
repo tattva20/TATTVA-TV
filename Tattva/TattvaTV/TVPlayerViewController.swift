@@ -9,18 +9,21 @@ public final class TVPlayerViewController: AVPlayerViewController {
 	private let infoViewController: UIViewController?
 	private let analyticsLogger: PlaybackAnalyticsLogger?
 	private let structuredLogger: (any StreamingCore.Logger)?
+	private let bufferManager: (any BufferManager)?
 	private var playbackBundle: TVPlayerComposer.Bundle?
 
 	public init(
 		video: Video,
 		infoViewController: UIViewController? = nil,
 		analyticsLogger: PlaybackAnalyticsLogger? = nil,
-		structuredLogger: (any StreamingCore.Logger)? = nil
+		structuredLogger: (any StreamingCore.Logger)? = nil,
+		bufferManager: (any BufferManager)? = nil
 	) {
 		self.video = video
 		self.infoViewController = infoViewController
 		self.analyticsLogger = analyticsLogger
 		self.structuredLogger = structuredLogger
+		self.bufferManager = bufferManager
 		super.init(nibName: nil, bundle: nil)
 	}
 
@@ -34,7 +37,8 @@ public final class TVPlayerViewController: AVPlayerViewController {
 		let bundle = TVPlayerComposer.playerComposedWith(
 			video: video,
 			analyticsLogger: analyticsLogger,
-			structuredLogger: structuredLogger
+			structuredLogger: structuredLogger,
+			bufferManager: bufferManager
 		)
 		player = bundle.player
 		playbackBundle = bundle

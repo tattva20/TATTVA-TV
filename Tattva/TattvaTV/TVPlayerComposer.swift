@@ -9,13 +9,15 @@ public enum TVPlayerComposer {
 		let statefulPlayer: StatefulVideoPlayer
 		let coordinator: PlaybackCoordinator
 		let performanceAdapter: VideoPlayerPerformanceAdapter
+		let bufferAdapter: AVPlayerBufferAdapterConcrete?
 	}
 
 	public static func playerComposedWith(
 		video: Video,
 		basePlayer: AVPlayerVideoPlayer = AVPlayerVideoPlayer(),
 		analyticsLogger: PlaybackAnalyticsLogger? = nil,
-		structuredLogger: (any StreamingCore.Logger)? = nil
+		structuredLogger: (any StreamingCore.Logger)? = nil,
+		bufferManager: (any BufferManager)? = nil
 	) -> Bundle {
 		var videoPlayer: VideoPlayer = basePlayer
 
@@ -43,13 +45,22 @@ public enum TVPlayerComposer {
 		)
 		coordinator.start()
 
+		let bufferAdapter = bufferManager.map {
+			AVPlayerBufferAdapter(player: basePlayer.player, bufferManager: $0)
+		}
+
 		basePlayer.load(url: video.url)
+
+		if let bufferAdapter, let item = basePlayer.player.currentItem {
+			bufferAdapter.applyToNewItem(item)
+		}
 
 		return Bundle(
 			player: basePlayer.player,
 			statefulPlayer: statefulPlayer,
 			coordinator: coordinator,
-			performanceAdapter: performanceAdapter
+			performanceAdapter: performanceAdapter,
+			bufferAdapter: bufferAdapter
 		)
 	}
 }
