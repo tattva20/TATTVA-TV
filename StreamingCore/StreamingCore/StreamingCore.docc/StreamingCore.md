@@ -147,7 +147,6 @@ Automatic cleanup of resources under memory pressure.
 - ``CleanupResult``
 - ``ResourceCleanupCoordinator``
 - ``VideoCacheCleaner``
-- ``ImageCacheCleaner``
 
 ### Analytics
 
