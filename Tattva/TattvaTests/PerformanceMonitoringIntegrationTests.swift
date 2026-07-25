@@ -74,15 +74,25 @@ final class PerformanceMonitoringIntegrationTests: XCTestCase {
 			XCTAssertNotNil(weakAdapter)
 		}
 
-		// Allow deallocation to complete
-		await Task.yield()
-		try? await Task.sleep(nanoseconds: 100_000_000)
+		await poll(until: { weakAdapter == nil })
 
-		// The adapter should be deallocated with the controller
 		XCTAssertNil(weakAdapter, "Expected performance adapter to be deallocated when controller is deallocated")
 	}
 
 	// MARK: - Helpers
+
+	@discardableResult
+	private func poll(
+		until condition: @MainActor () -> Bool,
+		timeout: TimeInterval = 1
+	) async -> Bool {
+		let deadline = Date() + timeout
+		while Date() < deadline {
+			if condition() { return true }
+			await Task.yield()
+		}
+		return condition()
+	}
 
 	private func makeVideo() -> Video {
 		Video(
