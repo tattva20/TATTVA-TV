@@ -269,18 +269,6 @@ final class AnalyticsVideoPlayerDecoratorTests: XCTestCase {
 
 	// MARK: - Helpers
 
-	@discardableResult
-	private func poll(
-		until condition: @MainActor () -> Bool,
-		timeout: TimeInterval = 1
-	) async -> Bool {
-		let deadline = Date() + timeout
-		while Date() < deadline {
-			if condition() { return true }
-			await Task.yield()
-		}
-		return condition()
-	}
 
 	private func makeSUT(
 		decoratee: VideoPlayerSpy? = nil,

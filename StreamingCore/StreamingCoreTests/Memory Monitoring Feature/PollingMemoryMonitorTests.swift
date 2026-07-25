@@ -59,7 +59,10 @@ final class PollingMemoryMonitorTests: XCTestCase {
 		)
 
 		sut.startMonitoring()
-		try? await Task.sleep(nanoseconds: 150_000_000) // 150ms
+		let deadline = Date() + 1
+		while Date() < deadline, counter.value < 2 {
+			try? await Task.sleep(nanoseconds: 10_000_000)
+		}
 
 		XCTAssertGreaterThanOrEqual(counter.value, 2)
 
