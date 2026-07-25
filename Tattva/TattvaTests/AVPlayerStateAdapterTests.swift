@@ -61,8 +61,7 @@ final class AVPlayerStateAdapterTests: XCTestCase {
 		// Simulate player item becoming ready by sending directly
 		await sut.simulatePlayerItemReady()
 
-		await Task.yield()
-		try? await Task.sleep(nanoseconds: 100_000_000)
+		await poll(until: { !stateMachineSpy.receivedActions.isEmpty })
 
 		XCTAssertTrue(stateMachineSpy.receivedActions.contains(.didBecomeReady))
 	}
@@ -75,8 +74,7 @@ final class AVPlayerStateAdapterTests: XCTestCase {
 
 		await sut.simulatePlaybackStarted()
 
-		await Task.yield()
-		try? await Task.sleep(nanoseconds: 100_000_000)
+		await poll(until: { !stateMachineSpy.receivedActions.isEmpty })
 
 		XCTAssertTrue(stateMachineSpy.receivedActions.contains(.didStartPlaying))
 	}
@@ -89,8 +87,7 @@ final class AVPlayerStateAdapterTests: XCTestCase {
 
 		await sut.simulatePlaybackPaused()
 
-		await Task.yield()
-		try? await Task.sleep(nanoseconds: 100_000_000)
+		await poll(until: { !stateMachineSpy.receivedActions.isEmpty })
 
 		XCTAssertTrue(stateMachineSpy.receivedActions.contains(.didPause))
 	}
@@ -103,8 +100,7 @@ final class AVPlayerStateAdapterTests: XCTestCase {
 
 		await sut.simulateBufferingStarted()
 
-		await Task.yield()
-		try? await Task.sleep(nanoseconds: 100_000_000)
+		await poll(until: { !stateMachineSpy.receivedActions.isEmpty })
 
 		XCTAssertTrue(stateMachineSpy.receivedActions.contains(.didStartBuffering))
 	}
@@ -115,8 +111,7 @@ final class AVPlayerStateAdapterTests: XCTestCase {
 
 		await sut.simulateBufferingEnded()
 
-		await Task.yield()
-		try? await Task.sleep(nanoseconds: 100_000_000)
+		await poll(until: { !stateMachineSpy.receivedActions.isEmpty })
 
 		XCTAssertTrue(stateMachineSpy.receivedActions.contains(.didFinishBuffering))
 	}
@@ -129,8 +124,7 @@ final class AVPlayerStateAdapterTests: XCTestCase {
 
 		await sut.simulatePlaybackEnded()
 
-		await Task.yield()
-		try? await Task.sleep(nanoseconds: 100_000_000)
+		await poll(until: { !stateMachineSpy.receivedActions.isEmpty })
 
 		XCTAssertTrue(stateMachineSpy.receivedActions.contains(.didReachEnd))
 	}
@@ -144,8 +138,7 @@ final class AVPlayerStateAdapterTests: XCTestCase {
 
 		await sut.simulatePlaybackFailed(error: error)
 
-		await Task.yield()
-		try? await Task.sleep(nanoseconds: 100_000_000)
+		await poll(until: { !stateMachineSpy.receivedActions.isEmpty })
 
 		let hasFailAction = stateMachineSpy.receivedActions.contains { action in
 			if case .didFail = action { return true }
@@ -155,6 +148,19 @@ final class AVPlayerStateAdapterTests: XCTestCase {
 	}
 
 	// MARK: - Helpers
+
+	@discardableResult
+	private func poll(
+		until condition: @MainActor () -> Bool,
+		timeout: TimeInterval = 1
+	) async -> Bool {
+		let deadline = Date() + timeout
+		while Date() < deadline {
+			if condition() { return true }
+			await Task.yield()
+		}
+		return condition()
+	}
 
 	private func makeSUT(
 		player: AVPlayer? = nil,
