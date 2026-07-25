@@ -64,6 +64,21 @@ final class PerformanceMonitoringIntegrationTests: XCTestCase {
 		XCTAssertNotNil(controller.networkBitrateBinding, "Expected a network-driven bitrate binding wired after composition")
 	}
 
+	func test_networkQualitySignal_isDeliveredToBufferManager() {
+		let bufferManager = BufferManagerSpy()
+		let expectation = expectation(description: "buffer manager receives a network-quality update")
+		expectation.assertForOverFulfill = false
+		bufferManager.onUpdateNetworkQuality = { _ in expectation.fulfill() }
+
+		let controller = VideoPlayerUIComposer.videoPlayerComposedWith(video: makeVideo(), bufferManager: bufferManager)
+
+		wait(for: [expectation], timeout: 2.0)
+		XCTAssertFalse(
+			bufferManager.receivedNetworkQualities.isEmpty,
+			"Expected the composed network monitor to drive the buffer manager's network quality")
+		_ = controller
+	}
+
 	func test_performanceAdapter_stopsMonitoringWhenControllerDeallocates() async {
 		let video = makeVideo()
 		weak var weakAdapter: VideoPlayerPerformanceAdapter?
@@ -103,5 +118,25 @@ final class PerformanceMonitoringIntegrationTests: XCTestCase {
 			thumbnailURL: URL(string: "https://example.com/image.jpg")!,
 			duration: 120
 		)
+	}
+
+	@MainActor
+	private final class BufferManagerSpy: BufferManager {
+		private(set) var receivedNetworkQualities: [NetworkQuality] = []
+		private(set) var receivedMemoryStates: [MemoryState] = []
+		var onUpdateNetworkQuality: ((NetworkQuality) -> Void)?
+
+		private let subject = CurrentValueSubject<BufferConfiguration, Never>(.balanced)
+		var currentConfiguration: BufferConfiguration { subject.value }
+		var configurationPublisher: AnyPublisher<BufferConfiguration, Never> { subject.eraseToAnyPublisher() }
+
+		func updateMemoryState(_ state: MemoryState) {
+			receivedMemoryStates.append(state)
+		}
+
+		func updateNetworkQuality(_ quality: NetworkQuality) {
+			receivedNetworkQualities.append(quality)
+			onUpdateNetworkQuality?(quality)
+		}
 	}
 }

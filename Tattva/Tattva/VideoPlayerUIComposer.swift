@@ -218,8 +218,10 @@ public enum VideoPlayerUIComposer {
 			let bitratePolicy = NetworkBitratePolicy()
 			let bitrateCancellable = networkMonitor.qualityPublisher
 				.receive(on: RunLoop.main)
-				.sink { [weak coordinator] quality in
+				.sink { [weak coordinator, weak performanceAdapter, bufferManager] quality in
 					coordinator?.setPreferredPeakBitRate(bitratePolicy.peakBitRate(for: quality))
+					bufferManager?.updateNetworkQuality(quality)
+					performanceAdapter?.updateNetworkQuality(quality)
 				}
 			Task { await networkMonitor.startMonitoring() }
 			controller.networkBitrateBinding = NetworkBitrateBinding(
