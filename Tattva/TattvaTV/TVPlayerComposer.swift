@@ -1,4 +1,5 @@
 import AVFoundation
+import Combine
 import StreamingCore
 import StreamingCorePlayback
 
@@ -10,6 +11,7 @@ public enum TVPlayerComposer {
 		let coordinator: PlaybackCoordinator
 		let performanceAdapter: VideoPlayerPerformanceAdapter
 		let bufferAdapter: AVPlayerBufferAdapterConcrete?
+		let networkBinding: TVNetworkBitrateBinding?
 	}
 
 	public static func playerComposedWith(
@@ -55,12 +57,39 @@ public enum TVPlayerComposer {
 			bufferAdapter.applyToNewItem(item)
 		}
 
+		let networkMonitor = NetworkQualityMonitor()
+		let bitratePolicy = NetworkBitratePolicy()
+		let bitrateCancellable = networkMonitor.qualityPublisher
+			.receive(on: RunLoop.main)
+			.sink { [weak coordinator, weak performanceAdapter, bufferManager] quality in
+				coordinator?.setPreferredPeakBitRate(bitratePolicy.peakBitRate(for: quality))
+				bufferManager?.updateNetworkQuality(quality)
+				performanceAdapter?.updateNetworkQuality(quality)
+			}
+		Task { await networkMonitor.startMonitoring() }
+
 		return Bundle(
 			player: basePlayer.player,
 			statefulPlayer: statefulPlayer,
 			coordinator: coordinator,
 			performanceAdapter: performanceAdapter,
-			bufferAdapter: bufferAdapter
+			bufferAdapter: bufferAdapter,
+			networkBinding: TVNetworkBitrateBinding(monitor: networkMonitor, cancellable: bitrateCancellable)
 		)
+	}
+}
+
+final class TVNetworkBitrateBinding {
+	private let monitor: NetworkQualityMonitor
+	private let cancellable: AnyCancellable
+
+	init(monitor: NetworkQualityMonitor, cancellable: AnyCancellable) {
+		self.monitor = monitor
+		self.cancellable = cancellable
+	}
+
+	deinit {
+		let monitor = self.monitor
+		Task { await monitor.stopMonitoring() }
 	}
 }
