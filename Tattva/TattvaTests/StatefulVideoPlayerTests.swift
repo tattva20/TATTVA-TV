@@ -11,8 +11,6 @@ import StreamingCore
 @testable import Tattva
 @testable import StreamingCorePlayback
 
-// Tests re-enabled for nonisolated actor isolation experiment
-
 @MainActor
 final class StatefulVideoPlayerTests: XCTestCase {
 
@@ -45,9 +43,8 @@ final class StatefulVideoPlayerTests: XCTestCase {
 		let url = anyURL()
 
 		sut.load(url: url)
-		try? await Task.sleep(nanoseconds: 50_000_000)
 
-		XCTAssertEqual(sut.currentPlaybackState, .loading(url))
+		await expect(sut, toReach: .loading(url))
 	}
 
 	func test_load_forwardsToDecoratee() {
@@ -66,16 +63,15 @@ final class StatefulVideoPlayerTests: XCTestCase {
 		await prepareForPlayback(sut)
 
 		sut.play()
-		try? await Task.sleep(nanoseconds: 50_000_000)
 
-		XCTAssertEqual(sut.currentPlaybackState, .playing)
+		await expect(sut, toReach: .playing)
 	}
 
 	func test_play_whenIdle_doesNotTransition() async {
 		let (sut, _) = makeSUT()
 
 		sut.play()
-		try? await Task.sleep(nanoseconds: 50_000_000)
+		await drainAsyncWork()
 
 		XCTAssertEqual(sut.currentPlaybackState, .idle)
 	}
@@ -85,7 +81,7 @@ final class StatefulVideoPlayerTests: XCTestCase {
 		await prepareForPlayback(sut)
 
 		sut.play()
-		try? await Task.sleep(nanoseconds: 50_000_000)
+		await expect(sut, toReach: .playing)
 
 		XCTAssertEqual(spy.playCallCount, 1)
 	}
@@ -96,12 +92,11 @@ final class StatefulVideoPlayerTests: XCTestCase {
 		let (sut, _) = makeSUT()
 		await prepareForPlayback(sut)
 		sut.play()
-		try? await Task.sleep(nanoseconds: 50_000_000)
+		await expect(sut, toReach: .playing)
 
 		sut.pause()
-		try? await Task.sleep(nanoseconds: 50_000_000)
 
-		XCTAssertEqual(sut.currentPlaybackState, .paused)
+		await expect(sut, toReach: .paused)
 	}
 
 	func test_pause_whenNotPlaying_doesNotTransition() async {
@@ -109,7 +104,7 @@ final class StatefulVideoPlayerTests: XCTestCase {
 		await prepareForPlayback(sut)
 
 		sut.pause()
-		try? await Task.sleep(nanoseconds: 50_000_000)
+		await drainAsyncWork()
 
 		XCTAssertEqual(sut.currentPlaybackState, .ready)
 	}
@@ -118,10 +113,10 @@ final class StatefulVideoPlayerTests: XCTestCase {
 		let (sut, spy) = makeSUT()
 		await prepareForPlayback(sut)
 		sut.play()
-		try? await Task.sleep(nanoseconds: 50_000_000)
+		await expect(sut, toReach: .playing)
 
 		sut.pause()
-		try? await Task.sleep(nanoseconds: 50_000_000)
+		await expect(sut, toReach: .paused)
 
 		XCTAssertEqual(spy.pauseCallCount, 1)
 	}
@@ -132,23 +127,22 @@ final class StatefulVideoPlayerTests: XCTestCase {
 		let (sut, _) = makeSUT()
 		await prepareForPlayback(sut)
 		sut.play()
-		try? await Task.sleep(nanoseconds: 50_000_000)
+		await expect(sut, toReach: .playing)
 
 		sut.seek(to: 30.0)
-		try? await Task.sleep(nanoseconds: 50_000_000)
 
 		// After seek completes, should return to playing
-		XCTAssertEqual(sut.currentPlaybackState, .playing)
+		await expect(sut, toReach: .playing)
 	}
 
 	func test_seek_forwardsToDecoratee() async {
 		let (sut, spy) = makeSUT()
 		await prepareForPlayback(sut)
 		sut.play()
-		try? await Task.sleep(nanoseconds: 50_000_000)
+		await expect(sut, toReach: .playing)
 
 		sut.seek(to: 30.0)
-		try? await Task.sleep(nanoseconds: 50_000_000)
+		await poll(until: { spy.seekTimes == [30.0] })
 
 		XCTAssertEqual(spy.seekTimes, [30.0])
 	}
@@ -159,12 +153,11 @@ final class StatefulVideoPlayerTests: XCTestCase {
 		let (sut, _) = makeSUT()
 		await prepareForPlayback(sut)
 		sut.play()
-		try? await Task.sleep(nanoseconds: 50_000_000)
+		await expect(sut, toReach: .playing)
 
 		sut.stop()
-		try? await Task.sleep(nanoseconds: 50_000_000)
 
-		XCTAssertEqual(sut.currentPlaybackState, .idle)
+		await expect(sut, toReach: .idle)
 	}
 
 	// MARK: - State Publisher
@@ -184,11 +177,11 @@ final class StatefulVideoPlayerTests: XCTestCase {
 			.store(in: &cancellables)
 
 		sut.load(url: anyURL())
-		try? await Task.sleep(nanoseconds: 50_000_000)
+		await expect(sut, toReach: .loading(anyURL()))
 		sut.simulateDidBecomeReady()
-		try? await Task.sleep(nanoseconds: 50_000_000)
+		await expect(sut, toReach: .ready)
 		sut.play()
-		try? await Task.sleep(nanoseconds: 50_000_000)
+		await expect(sut, toReach: .playing)
 
 		await fulfillment(of: [expectation], timeout: 1.0)
 		XCTAssertEqual(receivedStates.count, 3)
@@ -283,9 +276,37 @@ final class StatefulVideoPlayerTests: XCTestCase {
 
 	private func prepareForPlayback(_ sut: StatefulVideoPlayer) async {
 		sut.load(url: anyURL())
-		try? await Task.sleep(nanoseconds: 50_000_000)
+		await expect(sut, toReach: .loading(anyURL()))
 		sut.simulateDidBecomeReady()
-		try? await Task.sleep(nanoseconds: 50_000_000)
+		await expect(sut, toReach: .ready)
+	}
+
+	@discardableResult
+	private func poll(
+		until condition: @MainActor () -> Bool,
+		timeout: TimeInterval = 1
+	) async -> Bool {
+		let deadline = Date() + timeout
+		while Date() < deadline {
+			if condition() { return true }
+			await Task.yield()
+		}
+		return condition()
+	}
+
+	private func expect(
+		_ sut: StatefulVideoPlayer,
+		toReach expected: PlaybackState,
+		timeout: TimeInterval = 1,
+		file: StaticString = #filePath,
+		line: UInt = #line
+	) async {
+		await poll(until: { sut.currentPlaybackState == expected }, timeout: timeout)
+		XCTAssertEqual(sut.currentPlaybackState, expected, file: file, line: line)
+	}
+
+	private func drainAsyncWork(iterations: Int = 20) async {
+		for _ in 0..<iterations { await Task.yield() }
 	}
 
 	private func anyURL() -> URL {
