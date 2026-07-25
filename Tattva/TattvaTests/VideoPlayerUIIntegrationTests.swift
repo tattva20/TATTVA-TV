@@ -778,7 +778,6 @@ extension VideoPlayerViewController {
 
 	func simulatePauseTriggered() {
 		showControlsOnPause()
-		onPlaybackPaused?()
 	}
 
 	func simulateLandscapeOrientation() {

@@ -40,7 +40,6 @@ public final class VideoPlayerViewController: UIViewController {
 
 	// MARK: - External Callbacks
 
-	public var onPlaybackPaused: (() -> Void)?
 	public var onFullscreenToggle: (() -> Void)?
 	public var onPipToggle: (() -> Void)?
 	public var pipController: PictureInPictureControlling?
@@ -164,7 +163,6 @@ public final class VideoPlayerViewController: UIViewController {
 		if !areControlsVisible {
 			controlsVisibilityController?.show()
 		}
-		onPlaybackPaused?()
 	}
 
 	// MARK: - Tap Handling
