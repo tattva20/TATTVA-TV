@@ -47,6 +47,10 @@ public enum TVPlayerComposer {
 		)
 		coordinator.start()
 
+		let retryController = PlaybackRetryController(reload: { [weak basePlayer] in basePlayer?.reload() })
+		coordinator.onPlaybackFailed = { retryController.playbackDidFail() }
+		coordinator.onPlaybackRecovered = { retryController.playbackDidRecover() }
+
 		let bufferAdapter = bufferManager.map {
 			AVPlayerBufferAdapter(player: basePlayer.player, bufferManager: $0)
 		}

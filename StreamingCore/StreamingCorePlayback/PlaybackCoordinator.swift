@@ -14,6 +14,9 @@ public final class PlaybackCoordinator {
 	private let performanceAdapter: VideoPlayerPerformanceAdapter
 	private let onTimeUpdate: @MainActor (TimeInterval) -> Void
 
+	public var onPlaybackFailed: (() -> Void)?
+	public var onPlaybackRecovered: (() -> Void)?
+
 	private(set) var stateAdapter: AVPlayerStateAdapter?
 	private var performanceObserver: AVPlayerPerformanceObserver?
 	private nonisolated(unsafe) var timeObserverToken: Any?
@@ -39,8 +42,11 @@ public final class PlaybackCoordinator {
 		guard stateAdapter == nil else { return }
 
 		let stateMachine = self.stateMachine
-		let adapter = AVPlayerStateAdapter(player: player, onAction: { action in
-			Task { @MainActor in stateMachine.send(action) }
+		let adapter = AVPlayerStateAdapter(player: player, onAction: { [weak self] action in
+			Task { @MainActor in
+				stateMachine.send(action)
+				self?.handle(action)
+			}
 		})
 		adapter.startObserving()
 		stateAdapter = adapter
@@ -91,5 +97,16 @@ public final class PlaybackCoordinator {
 
 	public func setPreferredPeakBitRate(_ bitsPerSecond: Double) {
 		player.currentItem?.preferredPeakBitRate = max(0, bitsPerSecond)
+	}
+
+	private func handle(_ action: PlaybackAction) {
+		switch action {
+		case .didFail:
+			onPlaybackFailed?()
+		case .didStartPlaying:
+			onPlaybackRecovered?()
+		default:
+			break
+		}
 	}
 }

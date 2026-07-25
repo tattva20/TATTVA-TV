@@ -214,6 +214,10 @@ public enum VideoPlayerUIComposer {
 			coordinator.start()
 			controller.playbackCoordinator = coordinator
 
+			let retryController = PlaybackRetryController(reload: { [weak avPlayer] in avPlayer?.reload() })
+			coordinator.onPlaybackFailed = { retryController.playbackDidFail() }
+			coordinator.onPlaybackRecovered = { retryController.playbackDidRecover() }
+
 			if let bufferManager = bufferManager {
 				controller.bufferAdapter = AVPlayerBufferAdapter(
 					player: avPlayer.player,
