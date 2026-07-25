@@ -46,27 +46,6 @@ public final class VideoPlayerPerformanceAdapter {
 		cancellables.removeAll()
 	}
 
-	// MARK: - Event Simulation (for testing)
-
-	public func simulatePlaybackStarted() {
-		guard _isObserving else { return }
-		performanceService.recordEvent(.loadStarted)
-		if !hasRecordedFirstFrame {
-			hasRecordedFirstFrame = true
-			performanceService.recordEvent(.firstFrameRendered)
-		}
-	}
-
-	public func simulateBufferingStarted() {
-		guard _isObserving else { return }
-		performanceService.recordEvent(.bufferingStarted)
-	}
-
-	public func simulateBufferingEnded() {
-		guard _isObserving else { return }
-		performanceService.recordEvent(.bufferingEnded(duration: 0))
-	}
-
 	// MARK: - Quality Updates
 
 	public func updateNetworkQuality(_ quality: NetworkQuality) {
