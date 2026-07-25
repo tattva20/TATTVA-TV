@@ -12,8 +12,19 @@ final class ResourceCleanerSpy: ResourceCleaner, @unchecked Sendable {
 	let resourceName: String
 	let priority: CleanupPriority
 
-	private(set) var cleanupCallCount = 0
-	private(set) var estimateCallCount = 0
+	private let lock = NSLock()
+	private var _cleanupCallCount = 0
+	private var _estimateCallCount = 0
+
+	var cleanupCallCount: Int {
+		lock.lock(); defer { lock.unlock() }
+		return _cleanupCallCount
+	}
+
+	var estimateCallCount: Int {
+		lock.lock(); defer { lock.unlock() }
+		return _estimateCallCount
+	}
 
 	var stubEstimate: UInt64 = 1_000_000
 	var stubResult: CleanupResult
@@ -30,12 +41,12 @@ final class ResourceCleanerSpy: ResourceCleaner, @unchecked Sendable {
 	}
 
 	func estimateCleanup() async -> UInt64 {
-		estimateCallCount += 1
+		lock.withLock { _estimateCallCount += 1 }
 		return stubEstimate
 	}
 
 	func cleanup() async -> CleanupResult {
-		cleanupCallCount += 1
+		lock.withLock { _cleanupCallCount += 1 }
 		return stubResult
 	}
 }
