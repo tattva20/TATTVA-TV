@@ -149,6 +149,15 @@ class VideoPlayerUIIntegrationTests: XCTestCase {
 		XCTAssertTrue(sut.commentsContainerView?.isHidden ?? true, "Expected comments to be hidden in landscape")
 	}
 
+	func test_setCommentsController_afterViewLoaded_embedsImmediately() {
+		let sut = makeSUT()
+		sut.loadViewIfNeeded()
+
+		sut.setCommentsController(UIViewController())
+
+		XCTAssertNotNil(sut.commentsContainerView, "Expected the comments container to embed immediately when set after the view is loaded")
+	}
+
 	func test_videoPlayerView_hidesBottomControlsInLandscape() {
 		let sut = makeSUT()
 
