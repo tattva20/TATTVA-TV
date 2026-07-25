@@ -43,8 +43,7 @@ final class LoadResourcePresentationAdapterTests: XCTestCase {
 		let sut = makeSUT(loader: { expectedResource }, presenter: presenter)
 
 		sut.loadResource()
-		await Task.yield()
-		try? await Task.sleep(nanoseconds: 100_000_000)
+		await poll(until: { presenter.receivedResources.count == 1 })
 
 		XCTAssertEqual(presenter.receivedResources, [expectedResource])
 		XCTAssertEqual(presenter.loadingStates.last, false, "Expected loading to stop after success")
@@ -55,8 +54,7 @@ final class LoadResourcePresentationAdapterTests: XCTestCase {
 		let sut = makeSUT(loader: { throw self.anyNSError() }, presenter: presenter)
 
 		sut.loadResource()
-		await Task.yield()
-		try? await Task.sleep(nanoseconds: 100_000_000)
+		await poll(until: { presenter.errorCallCount == 1 })
 
 		XCTAssertEqual(presenter.errorCallCount, 1)
 		XCTAssertEqual(presenter.loadingStates.last, false, "Expected loading to stop after failure")
@@ -92,6 +90,19 @@ final class LoadResourcePresentationAdapterTests: XCTestCase {
 		)
 		trackForMemoryLeaks(sut, file: file, line: line)
 		return sut
+	}
+
+	@discardableResult
+	private func poll(
+		until condition: @MainActor () -> Bool,
+		timeout: TimeInterval = 1
+	) async -> Bool {
+		let deadline = Date() + timeout
+		while Date() < deadline {
+			if condition() { return true }
+			await Task.yield()
+		}
+		return condition()
 	}
 
 	private func makeHangingLoader(loadHandler: @escaping () -> Void = {}) -> () async throws -> String {
