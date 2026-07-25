@@ -9,7 +9,7 @@ import Combine
 import Network
 import XCTest
 @testable import StreamingCore
-@testable import StreamingCoreiOS
+import StreamingCorePlayback
 
 final class NetworkQualityMonitorTests: XCTestCase {
 
