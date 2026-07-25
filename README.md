@@ -969,10 +969,15 @@ func enterFullscreen() {
 
 ## Resources
 
-- [Essential Feed Case Study](https://github.com/essentialdevelopercom/essential-feed-case-study) - Architectural inspiration
-- [Clean Architecture](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html) - Robert C. Martin
-- [TDD By Example](https://www.amazon.com/Test-Driven-Development-Kent-Beck/dp/0321146530) - Kent Beck
-- [SOLID Principles](https://en.wikipedia.org/wiki/SOLID) - Object-Oriented Design
+The patterns in this codebase are applied from canonical sources:
+
+- [Essential Feed Case Study](https://github.com/essentialdevelopercom/essential-feed-case-study) — architectural inspiration (Essential Developer)
+- [The Clean Architecture](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html) & [The Principles of OOD (SOLID)](http://butunclebob.com/ArticleS.UncleBob.PrinciplesOfOod) — Robert C. Martin
+- [Test-Driven Development: By Example](https://www.oreilly.com/library/view/test-driven-development/0321146530/) — Kent Beck
+- [Test Pyramid](https://martinfowler.com/bliki/TestPyramid.html) & [Mocks Aren't Stubs](https://martinfowler.com/articles/mocksArentStubs.html) — Martin Fowler
+- [Designing for tvOS — Human Interface Guidelines](https://developer.apple.com/design/human-interface-guidelines/designing-for-tvos) — Apple
+- [App Architecture: iOS Application Design Patterns in Swift](https://www.objc.io/books/app-architecture/) — objc.io
+- [Point-Free](https://www.pointfree.co) — composable architecture & Swift reactive design
 
 ---
 
@@ -984,7 +989,11 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Author
 
-**Octavio Rojas**
+**Octavio Rojas** — Lead Mobile Architect (iOS · tvOS · React Native · Kotlin).
+
+[Portfolio](https://tattva20.github.io) · [LinkedIn](https://www.linkedin.com/in/rojastopete/) · [Writing (Medium)](https://medium.com/@tattva20) · [GitHub](https://github.com/tattva20)
+
+This project is part of a broader body of work on disciplined, AI-augmented engineering — the [Combined Force](https://medium.com/@tattva20/combined-force-start-here-8377b2be0da4) methodology.
 
 ---
 
