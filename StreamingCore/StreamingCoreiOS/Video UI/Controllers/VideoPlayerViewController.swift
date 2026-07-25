@@ -26,21 +26,6 @@ public final class VideoPlayerViewController: UIViewController {
 		return view
 	}()
 
-	// MARK: - UI Element Accessors (for backward compatibility)
-
-	public var playButton: UIButton { controlsView.playButton }
-	public var seekForwardButton: UIButton { controlsView.seekForwardButton }
-	public var seekBackwardButton: UIButton { controlsView.seekBackwardButton }
-	public var progressSlider: UISlider { controlsView.progressSlider }
-	public var currentTimeLabel: UILabel { controlsView.currentTimeLabel }
-	public var durationLabel: UILabel { controlsView.durationLabel }
-	public var muteButton: UIButton { controlsView.muteButton }
-	public var volumeSlider: UISlider { controlsView.volumeSlider }
-	public var playbackSpeedButton: UIButton { controlsView.playbackSpeedButton }
-	public var fullscreenButton: UIButton { controlsView.fullscreenButton }
-	public var pipButton: UIButton { controlsView.pipButton }
-	public var landscapeTitleLabel: UILabel { controlsView.landscapeTitleLabel }
-
 	// MARK: - State
 
 	public private(set) var isFullscreen: Bool = false

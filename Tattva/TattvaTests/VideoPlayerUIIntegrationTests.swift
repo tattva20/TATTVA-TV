@@ -39,23 +39,23 @@ class VideoPlayerUIIntegrationTests: XCTestCase {
 	func test_videoPlayerView_displaysPlaybackControls() {
 		let sut = makeSUT()
 
-		XCTAssertNotNil(sut.playButton)
-		XCTAssertNotNil(sut.seekForwardButton)
-		XCTAssertNotNil(sut.seekBackwardButton)
-		XCTAssertNotNil(sut.progressSlider)
-		XCTAssertNotNil(sut.currentTimeLabel)
-		XCTAssertNotNil(sut.durationLabel)
-		XCTAssertNotNil(sut.muteButton)
-		XCTAssertNotNil(sut.volumeSlider)
-		XCTAssertNotNil(sut.playbackSpeedButton)
-		XCTAssertNotNil(sut.fullscreenButton)
+		XCTAssertNotNil(sut.controlsView.playButton)
+		XCTAssertNotNil(sut.controlsView.seekForwardButton)
+		XCTAssertNotNil(sut.controlsView.seekBackwardButton)
+		XCTAssertNotNil(sut.controlsView.progressSlider)
+		XCTAssertNotNil(sut.controlsView.currentTimeLabel)
+		XCTAssertNotNil(sut.controlsView.durationLabel)
+		XCTAssertNotNil(sut.controlsView.muteButton)
+		XCTAssertNotNil(sut.controlsView.volumeSlider)
+		XCTAssertNotNil(sut.controlsView.playbackSpeedButton)
+		XCTAssertNotNil(sut.controlsView.fullscreenButton)
 	}
 
 	func test_videoPlayerView_controlsAreVisibleInitially() {
 		let sut = makeSUT()
 
 		XCTAssertTrue(sut.areControlsVisible)
-		XCTAssertEqual(sut.playButton.alpha, 1.0)
+		XCTAssertEqual(sut.controlsView.playButton.alpha, 1.0)
 	}
 
 	func test_videoPlayerView_autoPlaysOnAppear() {
@@ -75,19 +75,19 @@ class VideoPlayerUIIntegrationTests: XCTestCase {
 		sut.simulateControlsAutoHide()
 
 		// Overlay controls should hide in portrait
-		XCTAssertEqual(sut.playButton.alpha, 0.0, "Expected play button to hide")
-		XCTAssertEqual(sut.seekForwardButton.alpha, 0.0, "Expected seek forward button to hide")
-		XCTAssertEqual(sut.seekBackwardButton.alpha, 0.0, "Expected seek backward button to hide")
-		XCTAssertEqual(sut.progressSlider.alpha, 0.0, "Expected progress slider to hide")
-		XCTAssertEqual(sut.currentTimeLabel.alpha, 0.0, "Expected current time label to hide")
-		XCTAssertEqual(sut.durationLabel.alpha, 0.0, "Expected duration label to hide")
+		XCTAssertEqual(sut.controlsView.playButton.alpha, 0.0, "Expected play button to hide")
+		XCTAssertEqual(sut.controlsView.seekForwardButton.alpha, 0.0, "Expected seek forward button to hide")
+		XCTAssertEqual(sut.controlsView.seekBackwardButton.alpha, 0.0, "Expected seek backward button to hide")
+		XCTAssertEqual(sut.controlsView.progressSlider.alpha, 0.0, "Expected progress slider to hide")
+		XCTAssertEqual(sut.controlsView.currentTimeLabel.alpha, 0.0, "Expected current time label to hide")
+		XCTAssertEqual(sut.controlsView.durationLabel.alpha, 0.0, "Expected duration label to hide")
 
 		// Bottom controls should NOT hide in portrait
-		XCTAssertEqual(sut.muteButton.alpha, 1.0, "Expected mute button to remain visible in portrait")
-		XCTAssertEqual(sut.volumeSlider.alpha, 1.0, "Expected volume slider to remain visible in portrait")
-		XCTAssertEqual(sut.playbackSpeedButton.alpha, 1.0, "Expected playback speed button to remain visible in portrait")
-		XCTAssertEqual(sut.fullscreenButton.alpha, 1.0, "Expected fullscreen button to remain visible in portrait")
-		XCTAssertEqual(sut.pipButton.alpha, 1.0, "Expected pip button to remain visible in portrait")
+		XCTAssertEqual(sut.controlsView.muteButton.alpha, 1.0, "Expected mute button to remain visible in portrait")
+		XCTAssertEqual(sut.controlsView.volumeSlider.alpha, 1.0, "Expected volume slider to remain visible in portrait")
+		XCTAssertEqual(sut.controlsView.playbackSpeedButton.alpha, 1.0, "Expected playback speed button to remain visible in portrait")
+		XCTAssertEqual(sut.controlsView.fullscreenButton.alpha, 1.0, "Expected fullscreen button to remain visible in portrait")
+		XCTAssertEqual(sut.controlsView.pipButton.alpha, 1.0, "Expected pip button to remain visible in portrait")
 	}
 
 	func test_videoPlayerView_allControlsHideWhenAutoHideTriggersWhilePlayingInLandscape() {
@@ -99,12 +99,12 @@ class VideoPlayerUIIntegrationTests: XCTestCase {
 		sut.simulateControlsAutoHide()
 
 		// All controls should hide in landscape
-		XCTAssertEqual(sut.playButton.alpha, 0.0, "Expected play button to hide")
-		XCTAssertEqual(sut.muteButton.alpha, 0.0, "Expected mute button to hide in landscape")
-		XCTAssertEqual(sut.volumeSlider.alpha, 0.0, "Expected volume slider to hide in landscape")
-		XCTAssertEqual(sut.playbackSpeedButton.alpha, 0.0, "Expected playback speed button to hide in landscape")
-		XCTAssertEqual(sut.fullscreenButton.alpha, 0.0, "Expected fullscreen button to hide in landscape")
-		XCTAssertEqual(sut.pipButton.alpha, 0.0, "Expected pip button to hide in landscape")
+		XCTAssertEqual(sut.controlsView.playButton.alpha, 0.0, "Expected play button to hide")
+		XCTAssertEqual(sut.controlsView.muteButton.alpha, 0.0, "Expected mute button to hide in landscape")
+		XCTAssertEqual(sut.controlsView.volumeSlider.alpha, 0.0, "Expected volume slider to hide in landscape")
+		XCTAssertEqual(sut.controlsView.playbackSpeedButton.alpha, 0.0, "Expected playback speed button to hide in landscape")
+		XCTAssertEqual(sut.controlsView.fullscreenButton.alpha, 0.0, "Expected fullscreen button to hide in landscape")
+		XCTAssertEqual(sut.controlsView.pipButton.alpha, 0.0, "Expected pip button to hide in landscape")
 	}
 
 	func test_videoPlayerView_controlsRemainVisibleWhenPaused() {
@@ -114,8 +114,8 @@ class VideoPlayerUIIntegrationTests: XCTestCase {
 
 		sut.simulateControlsAutoHide()
 
-		XCTAssertEqual(sut.playButton.alpha, 1.0, "Expected play button to remain visible when paused")
-		XCTAssertEqual(sut.muteButton.alpha, 1.0, "Expected mute button to remain visible when paused")
+		XCTAssertEqual(sut.controlsView.playButton.alpha, 1.0, "Expected play button to remain visible when paused")
+		XCTAssertEqual(sut.controlsView.muteButton.alpha, 1.0, "Expected mute button to remain visible when paused")
 	}
 
 	func test_videoPlayerView_showsControlsWhenVideoIsPaused() {
@@ -124,12 +124,12 @@ class VideoPlayerUIIntegrationTests: XCTestCase {
 		let sut = makeSUT(player: player)
 
 		sut.simulateControlsAutoHide()
-		XCTAssertEqual(sut.playButton.alpha, 0.0, "Precondition: controls should be hidden")
+		XCTAssertEqual(sut.controlsView.playButton.alpha, 0.0, "Precondition: controls should be hidden")
 
 		player.isPlaying = false
 		sut.simulatePauseTriggered()
 
-		XCTAssertEqual(sut.playButton.alpha, 1.0, "Expected controls to show when video is paused")
+		XCTAssertEqual(sut.controlsView.playButton.alpha, 1.0, "Expected controls to show when video is paused")
 	}
 
 	func test_videoPlayerView_landscapeLayoutExpandsPlayerView() {
@@ -163,8 +163,8 @@ class VideoPlayerUIIntegrationTests: XCTestCase {
 
 		sut.simulateLandscapeOrientation()
 
-		XCTAssertEqual(sut.landscapeTitleLabel.text, "Test Title", "Expected title label to show video title")
-		XCTAssertFalse(sut.landscapeTitleLabel.isHidden, "Expected title label to be visible in landscape")
+		XCTAssertEqual(sut.controlsView.landscapeTitleLabel.text, "Test Title", "Expected title label to show video title")
+		XCTAssertFalse(sut.controlsView.landscapeTitleLabel.isHidden, "Expected title label to be visible in landscape")
 	}
 
 	func test_videoPlayerView_titleLabelHasLowAlphaWhiteInLandscape() {
@@ -172,7 +172,7 @@ class VideoPlayerUIIntegrationTests: XCTestCase {
 
 		sut.simulateLandscapeOrientation()
 
-		XCTAssertEqual(sut.landscapeTitleLabel.textColor, UIColor.white.withAlphaComponent(0.7), "Expected title label to have low alpha white color")
+		XCTAssertEqual(sut.controlsView.landscapeTitleLabel.textColor, UIColor.white.withAlphaComponent(0.7), "Expected title label to have low alpha white color")
 	}
 
 	func test_videoPlayerView_titleLabelAutoHidesWithControlsInLandscape() {
@@ -181,11 +181,11 @@ class VideoPlayerUIIntegrationTests: XCTestCase {
 		let sut = makeSUT(player: player)
 
 		sut.simulateLandscapeOrientation()
-		XCTAssertEqual(sut.landscapeTitleLabel.alpha, 1.0, "Precondition: title should be visible initially")
+		XCTAssertEqual(sut.controlsView.landscapeTitleLabel.alpha, 1.0, "Precondition: title should be visible initially")
 
 		sut.simulateControlsAutoHide()
 
-		XCTAssertEqual(sut.landscapeTitleLabel.alpha, 0.0, "Expected title label to auto-hide with controls")
+		XCTAssertEqual(sut.controlsView.landscapeTitleLabel.alpha, 0.0, "Expected title label to auto-hide with controls")
 	}
 
 	func test_videoPlayerView_titleLabelShowsWithControlsWhenPaused() {
@@ -195,12 +195,12 @@ class VideoPlayerUIIntegrationTests: XCTestCase {
 
 		sut.simulateLandscapeOrientation()
 		sut.simulateControlsAutoHide()
-		XCTAssertEqual(sut.landscapeTitleLabel.alpha, 0.0, "Precondition: title should be hidden")
+		XCTAssertEqual(sut.controlsView.landscapeTitleLabel.alpha, 0.0, "Precondition: title should be hidden")
 
 		player.isPlaying = false
 		sut.simulatePauseTriggered()
 
-		XCTAssertEqual(sut.landscapeTitleLabel.alpha, 1.0, "Expected title label to show with controls when paused")
+		XCTAssertEqual(sut.controlsView.landscapeTitleLabel.alpha, 1.0, "Expected title label to show with controls when paused")
 	}
 
 	func test_videoPlayerView_hidesTitleLabelInPortrait() {
@@ -208,7 +208,7 @@ class VideoPlayerUIIntegrationTests: XCTestCase {
 
 		sut.loadViewIfNeeded()
 
-		XCTAssertTrue(sut.landscapeTitleLabel.isHidden, "Expected landscape title label to be hidden in portrait")
+		XCTAssertTrue(sut.controlsView.landscapeTitleLabel.isHidden, "Expected landscape title label to be hidden in portrait")
 	}
 
 	func test_videoPlayerView_hidesNavigationBarInLandscape() {
@@ -241,7 +241,7 @@ class VideoPlayerUIIntegrationTests: XCTestCase {
 		sut.simulateLandscapeOrientation()
 		sut.view.layoutIfNeeded()
 
-		let titleCenterX = sut.landscapeTitleLabel.center.x
+		let titleCenterX = sut.controlsView.landscapeTitleLabel.center.x
 		let viewCenterX = sut.view.bounds.width / 2
 		XCTAssertEqual(titleCenterX, viewCenterX, accuracy: 1.0, "Expected title label to be centered horizontally")
 	}
@@ -251,8 +251,8 @@ class VideoPlayerUIIntegrationTests: XCTestCase {
 
 		sut.simulateLandscapeOrientation()
 
-		XCTAssertEqual(sut.fullscreenButton.alpha, 1.0, "Expected fullscreen button to be visible in landscape")
-		XCTAssertFalse(sut.fullscreenButton.isHidden, "Expected fullscreen button to not be hidden in landscape")
+		XCTAssertEqual(sut.controlsView.fullscreenButton.alpha, 1.0, "Expected fullscreen button to be visible in landscape")
+		XCTAssertFalse(sut.controlsView.fullscreenButton.isHidden, "Expected fullscreen button to not be hidden in landscape")
 	}
 
 	func test_videoPlayerView_fullscreenButtonCallsToggleHandler() {
@@ -261,7 +261,7 @@ class VideoPlayerUIIntegrationTests: XCTestCase {
 		sut.onFullscreenToggle = { toggleCallCount += 1 }
 
 		sut.loadViewIfNeeded()
-		sut.fullscreenButton.simulateTap()
+		sut.controlsView.fullscreenButton.simulateTap()
 
 		XCTAssertEqual(toggleCallCount, 1, "Expected fullscreen toggle handler to be called once")
 	}
@@ -273,8 +273,8 @@ class VideoPlayerUIIntegrationTests: XCTestCase {
 		sut.simulateLandscapeOrientation()
 		sut.view.layoutIfNeeded()
 
-		let fullscreenX = sut.fullscreenButton.frame.minX
-		let durationMaxX = sut.durationLabel.frame.maxX
+		let fullscreenX = sut.controlsView.fullscreenButton.frame.minX
+		let durationMaxX = sut.controlsView.durationLabel.frame.maxX
 		XCTAssertGreaterThan(fullscreenX, durationMaxX, "Expected fullscreen button to be positioned after duration label")
 	}
 
@@ -300,7 +300,7 @@ class VideoPlayerUIIntegrationTests: XCTestCase {
 		sut.loadViewIfNeeded()
 
 		let expectedImage = UIImage(systemName: "arrow.up.left.and.arrow.down.right")
-		XCTAssertEqual(sut.fullscreenButton.image(for: .normal), expectedImage, "Expected expand icon in portrait")
+		XCTAssertEqual(sut.controlsView.fullscreenButton.image(for: .normal), expectedImage, "Expected expand icon in portrait")
 	}
 
 	func test_videoPlayerView_fullscreenButtonShowsCollapseIconInLandscape() {
@@ -309,7 +309,7 @@ class VideoPlayerUIIntegrationTests: XCTestCase {
 		sut.simulateLandscapeOrientation()
 
 		let expectedImage = UIImage(systemName: "arrow.down.right.and.arrow.up.left")
-		XCTAssertEqual(sut.fullscreenButton.image(for: .normal), expectedImage, "Expected collapse icon in landscape")
+		XCTAssertEqual(sut.controlsView.fullscreenButton.image(for: .normal), expectedImage, "Expected collapse icon in landscape")
 	}
 
 	func test_videoPlayerView_fullscreenButtonIconUpdatesOnOrientationChange() {
@@ -319,13 +319,13 @@ class VideoPlayerUIIntegrationTests: XCTestCase {
 		let expandIcon = UIImage(systemName: "arrow.up.left.and.arrow.down.right")
 		let collapseIcon = UIImage(systemName: "arrow.down.right.and.arrow.up.left")
 
-		XCTAssertEqual(sut.fullscreenButton.image(for: .normal), expandIcon, "Precondition: should show expand icon")
+		XCTAssertEqual(sut.controlsView.fullscreenButton.image(for: .normal), expandIcon, "Precondition: should show expand icon")
 
 		sut.simulateLandscapeOrientation()
-		XCTAssertEqual(sut.fullscreenButton.image(for: .normal), collapseIcon, "Expected collapse icon after landscape")
+		XCTAssertEqual(sut.controlsView.fullscreenButton.image(for: .normal), collapseIcon, "Expected collapse icon after landscape")
 
 		sut.simulatePortraitOrientation()
-		XCTAssertEqual(sut.fullscreenButton.image(for: .normal), expandIcon, "Expected expand icon after portrait")
+		XCTAssertEqual(sut.controlsView.fullscreenButton.image(for: .normal), expandIcon, "Expected expand icon after portrait")
 	}
 
 	func test_videoPlayerView_supportsAllOrientationsExceptUpsideDown() {
@@ -339,8 +339,8 @@ class VideoPlayerUIIntegrationTests: XCTestCase {
 
 		sut.simulateLandscapeOrientation()
 
-		XCTAssertEqual(sut.pipButton.alpha, 1.0, "Expected pip button to be visible in landscape")
-		XCTAssertFalse(sut.pipButton.isHidden, "Expected pip button to not be hidden in landscape")
+		XCTAssertEqual(sut.controlsView.pipButton.alpha, 1.0, "Expected pip button to be visible in landscape")
+		XCTAssertFalse(sut.controlsView.pipButton.isHidden, "Expected pip button to not be hidden in landscape")
 	}
 
 	func test_videoPlayerView_pipButtonIsPositionedBetweenDurationAndFullscreenInLandscape() {
@@ -350,11 +350,11 @@ class VideoPlayerUIIntegrationTests: XCTestCase {
 		sut.simulateLandscapeOrientation()
 		sut.view.layoutIfNeeded()
 
-		let pipButtonX = sut.pipButton.frame.minX
-		let durationMaxX = sut.durationLabel.frame.maxX
-		let fullscreenMinX = sut.fullscreenButton.frame.minX
+		let pipButtonX = sut.controlsView.pipButton.frame.minX
+		let durationMaxX = sut.controlsView.durationLabel.frame.maxX
+		let fullscreenMinX = sut.controlsView.fullscreenButton.frame.minX
 		XCTAssertGreaterThan(pipButtonX, durationMaxX, "Expected pip button to be positioned after duration label")
-		XCTAssertLessThan(sut.pipButton.frame.maxX, fullscreenMinX, "Expected pip button to be positioned before fullscreen button")
+		XCTAssertLessThan(sut.controlsView.pipButton.frame.maxX, fullscreenMinX, "Expected pip button to be positioned before fullscreen button")
 	}
 
 	func test_videoPlayerView_pipButtonAutoHidesWithControlsInLandscape() {
@@ -363,11 +363,11 @@ class VideoPlayerUIIntegrationTests: XCTestCase {
 		let sut = makeSUT(player: player)
 
 		sut.simulateLandscapeOrientation()
-		XCTAssertEqual(sut.pipButton.alpha, 1.0, "Precondition: pip button should be visible initially")
+		XCTAssertEqual(sut.controlsView.pipButton.alpha, 1.0, "Precondition: pip button should be visible initially")
 
 		sut.simulateControlsAutoHide()
 
-		XCTAssertEqual(sut.pipButton.alpha, 0.0, "Expected pip button to auto-hide with controls in landscape")
+		XCTAssertEqual(sut.controlsView.pipButton.alpha, 0.0, "Expected pip button to auto-hide with controls in landscape")
 	}
 
 	func test_videoPlayerView_pipButtonShowsWithControlsWhenPausedInLandscape() {
@@ -377,12 +377,12 @@ class VideoPlayerUIIntegrationTests: XCTestCase {
 
 		sut.simulateLandscapeOrientation()
 		sut.simulateControlsAutoHide()
-		XCTAssertEqual(sut.pipButton.alpha, 0.0, "Precondition: pip button should be hidden")
+		XCTAssertEqual(sut.controlsView.pipButton.alpha, 0.0, "Precondition: pip button should be hidden")
 
 		player.isPlaying = false
 		sut.simulatePauseTriggered()
 
-		XCTAssertEqual(sut.pipButton.alpha, 1.0, "Expected pip button to show with controls when paused")
+		XCTAssertEqual(sut.controlsView.pipButton.alpha, 1.0, "Expected pip button to show with controls when paused")
 	}
 
 	func test_videoPlayerView_landscapeControlsArePositioned64PointsFromBottom() {
@@ -394,7 +394,7 @@ class VideoPlayerUIIntegrationTests: XCTestCase {
 
 		let expectedBottomOffset: CGFloat = 64
 		let playerViewBottom = sut.playerView.frame.maxY
-		let controlsBottomY = sut.currentTimeLabel.frame.maxY
+		let controlsBottomY = sut.controlsView.currentTimeLabel.frame.maxY
 
 		XCTAssertEqual(playerViewBottom - controlsBottomY, expectedBottomOffset, accuracy: 1.0, "Expected controls to be 64 points from the bottom of the player view in landscape")
 	}
@@ -407,11 +407,11 @@ class VideoPlayerUIIntegrationTests: XCTestCase {
 		sut.view.layoutIfNeeded()
 
 		let playerViewBottom = sut.playerView.frame.maxY
-		let sliderCenterY = sut.progressSlider.center.y
-		let currentTimeCenterY = sut.currentTimeLabel.center.y
+		let sliderCenterY = sut.controlsView.progressSlider.center.y
+		let currentTimeCenterY = sut.controlsView.currentTimeLabel.center.y
 
 		XCTAssertEqual(sliderCenterY, currentTimeCenterY, accuracy: 1.0, "Expected slider to be vertically aligned with time labels")
-		XCTAssertLessThan(sut.progressSlider.frame.maxY, playerViewBottom - 48, "Expected slider to be at least 48 points from the bottom")
+		XCTAssertLessThan(sut.controlsView.progressSlider.frame.maxY, playerViewBottom - 48, "Expected slider to be at least 48 points from the bottom")
 	}
 
 	func test_videoPlayerView_portraitControlsRemainAt16PointsFromBottom() {
@@ -423,7 +423,7 @@ class VideoPlayerUIIntegrationTests: XCTestCase {
 
 		let expectedBottomOffset: CGFloat = 16
 		let playerViewBottom = sut.playerView.frame.maxY
-		let controlsBottomY = sut.currentTimeLabel.frame.maxY
+		let controlsBottomY = sut.controlsView.currentTimeLabel.frame.maxY
 
 		XCTAssertEqual(playerViewBottom - controlsBottomY, expectedBottomOffset, accuracy: 1.0, "Expected controls to remain 16 points from the bottom of the player view in portrait")
 	}
@@ -433,8 +433,8 @@ class VideoPlayerUIIntegrationTests: XCTestCase {
 
 		sut.loadViewIfNeeded()
 
-		XCTAssertEqual(sut.playbackSpeedButton.alpha, 1.0, "Expected speed button to be visible in portrait")
-		XCTAssertFalse(sut.playbackSpeedButton.isHidden, "Expected speed button to not be hidden in portrait")
+		XCTAssertEqual(sut.controlsView.playbackSpeedButton.alpha, 1.0, "Expected speed button to be visible in portrait")
+		XCTAssertFalse(sut.controlsView.playbackSpeedButton.isHidden, "Expected speed button to not be hidden in portrait")
 	}
 
 	func test_videoPlayerView_speedButtonIsVisibleInLandscape() {
@@ -442,8 +442,8 @@ class VideoPlayerUIIntegrationTests: XCTestCase {
 
 		sut.simulateLandscapeOrientation()
 
-		XCTAssertEqual(sut.playbackSpeedButton.alpha, 1.0, "Expected speed button to be visible in landscape")
-		XCTAssertFalse(sut.playbackSpeedButton.isHidden, "Expected speed button to not be hidden in landscape")
+		XCTAssertEqual(sut.controlsView.playbackSpeedButton.alpha, 1.0, "Expected speed button to be visible in landscape")
+		XCTAssertFalse(sut.controlsView.playbackSpeedButton.isHidden, "Expected speed button to not be hidden in landscape")
 	}
 
 	func test_videoPlayerView_speedButtonIsPositionedBetweenSliderAndPipInLandscape() {
@@ -453,10 +453,10 @@ class VideoPlayerUIIntegrationTests: XCTestCase {
 		sut.simulateLandscapeOrientation()
 		sut.view.layoutIfNeeded()
 
-		let speedButtonMinX = sut.playbackSpeedButton.frame.minX
-		let speedButtonMaxX = sut.playbackSpeedButton.frame.maxX
-		let durationMaxX = sut.durationLabel.frame.maxX
-		let pipMinX = sut.pipButton.frame.minX
+		let speedButtonMinX = sut.controlsView.playbackSpeedButton.frame.minX
+		let speedButtonMaxX = sut.controlsView.playbackSpeedButton.frame.maxX
+		let durationMaxX = sut.controlsView.durationLabel.frame.maxX
+		let pipMinX = sut.controlsView.pipButton.frame.minX
 		XCTAssertGreaterThan(speedButtonMinX, durationMaxX, "Expected speed button to be positioned after duration label in landscape")
 		XCTAssertLessThan(speedButtonMaxX, pipMinX, "Expected speed button to be positioned before pip button in landscape")
 	}
@@ -468,7 +468,7 @@ class VideoPlayerUIIntegrationTests: XCTestCase {
 		sut.loadViewIfNeeded()
 		sut.view.layoutIfNeeded()
 
-		let sliderWidth = sut.progressSlider.frame.width
+		let sliderWidth = sut.controlsView.progressSlider.frame.width
 		let viewWidth = sut.view.frame.width
 		let minExpectedWidth = viewWidth * 0.5 // Slider should be at least 50% of view width in portrait
 		XCTAssertGreaterThan(sliderWidth, minExpectedWidth, "Expected slider to have reasonable width in portrait (got \(sliderWidth), expected at least \(minExpectedWidth))")
@@ -481,7 +481,7 @@ class VideoPlayerUIIntegrationTests: XCTestCase {
 		sut.simulateLandscapeOrientation()
 		sut.view.layoutIfNeeded()
 
-		let sliderWidth = sut.progressSlider.frame.width
+		let sliderWidth = sut.controlsView.progressSlider.frame.width
 		let viewWidth = sut.view.frame.width
 		let minExpectedWidth = viewWidth * 0.4 // Slider should be at least 40% of view width in landscape (accounting for more controls)
 		XCTAssertGreaterThan(sliderWidth, minExpectedWidth, "Expected slider to have reasonable width in landscape (got \(sliderWidth), expected at least \(minExpectedWidth))")
@@ -495,13 +495,13 @@ class VideoPlayerUIIntegrationTests: XCTestCase {
 		// Go to landscape and trigger auto-hide (which hides speed button)
 		sut.simulateLandscapeOrientation()
 		sut.simulateControlsAutoHide()
-		XCTAssertEqual(sut.playbackSpeedButton.alpha, 0.0, "Precondition: speed button should be hidden in landscape after auto-hide")
+		XCTAssertEqual(sut.controlsView.playbackSpeedButton.alpha, 0.0, "Precondition: speed button should be hidden in landscape after auto-hide")
 
 		// Return to portrait - speed button should be restored
 		sut.simulatePortraitOrientation()
 		sut.simulatePauseTriggered()
 
-		XCTAssertEqual(sut.playbackSpeedButton.alpha, 1.0, "Expected speed button to be restored after returning to portrait")
+		XCTAssertEqual(sut.controlsView.playbackSpeedButton.alpha, 1.0, "Expected speed button to be restored after returning to portrait")
 	}
 
 	// MARK: - Orientation Tests
@@ -568,17 +568,17 @@ class VideoPlayerUIIntegrationTests: XCTestCase {
 		sut.simulateControlsAutoHide()
 
 		// Verify controls are hidden
-		XCTAssertEqual(sut.playbackSpeedButton.alpha, 0.0, "Precondition: speed button should be hidden")
-		XCTAssertEqual(sut.pipButton.alpha, 0.0, "Precondition: pip button should be hidden")
-		XCTAssertEqual(sut.fullscreenButton.alpha, 0.0, "Precondition: fullscreen button should be hidden")
+		XCTAssertEqual(sut.controlsView.playbackSpeedButton.alpha, 0.0, "Precondition: speed button should be hidden")
+		XCTAssertEqual(sut.controlsView.pipButton.alpha, 0.0, "Precondition: pip button should be hidden")
+		XCTAssertEqual(sut.controlsView.fullscreenButton.alpha, 0.0, "Precondition: fullscreen button should be hidden")
 
 		// Tap fullscreen button (while hidden) - should NOT make controls visible in landscape
-		sut.fullscreenButton.simulateTap()
+		sut.controlsView.fullscreenButton.simulateTap()
 
 		// Controls should remain hidden in landscape (until orientation actually changes)
-		XCTAssertEqual(sut.playbackSpeedButton.alpha, 0.0, "Expected speed button to remain hidden after fullscreen tap in landscape")
-		XCTAssertEqual(sut.pipButton.alpha, 0.0, "Expected pip button to remain hidden after fullscreen tap in landscape")
-		XCTAssertEqual(sut.fullscreenButton.alpha, 0.0, "Expected fullscreen button to remain hidden after fullscreen tap in landscape")
+		XCTAssertEqual(sut.controlsView.playbackSpeedButton.alpha, 0.0, "Expected speed button to remain hidden after fullscreen tap in landscape")
+		XCTAssertEqual(sut.controlsView.pipButton.alpha, 0.0, "Expected pip button to remain hidden after fullscreen tap in landscape")
+		XCTAssertEqual(sut.controlsView.fullscreenButton.alpha, 0.0, "Expected fullscreen button to remain hidden after fullscreen tap in landscape")
 	}
 
 	func test_fullscreenButtonTap_inLandscapeWithHiddenControls_controlsBecomeVisibleAfterPortraitTransition() {
@@ -591,13 +591,13 @@ class VideoPlayerUIIntegrationTests: XCTestCase {
 		sut.simulateControlsAutoHide()
 
 		// Tap fullscreen button and then simulate the resulting portrait orientation
-		sut.fullscreenButton.simulateTap()
+		sut.controlsView.fullscreenButton.simulateTap()
 		sut.simulatePortraitOrientation()
 
 		// After transition to portrait, controls should be visible (portrait always shows bottom controls)
-		XCTAssertEqual(sut.playbackSpeedButton.alpha, 1.0, "Expected speed button to be visible in portrait")
-		XCTAssertEqual(sut.pipButton.alpha, 1.0, "Expected pip button to be visible in portrait")
-		XCTAssertEqual(sut.fullscreenButton.alpha, 1.0, "Expected fullscreen button to be visible in portrait")
+		XCTAssertEqual(sut.controlsView.playbackSpeedButton.alpha, 1.0, "Expected speed button to be visible in portrait")
+		XCTAssertEqual(sut.controlsView.pipButton.alpha, 1.0, "Expected pip button to be visible in portrait")
+		XCTAssertEqual(sut.controlsView.fullscreenButton.alpha, 1.0, "Expected fullscreen button to be visible in portrait")
 	}
 
 	func test_fullscreenButtonTap_inLandscapeWithHiddenControls_doesNotToggleControlsVisibility() {
@@ -610,20 +610,20 @@ class VideoPlayerUIIntegrationTests: XCTestCase {
 		sut.simulateControlsAutoHide()
 
 		// Verify controls are hidden
-		XCTAssertEqual(sut.playbackSpeedButton.alpha, 0.0, "Precondition: speed button should be hidden")
+		XCTAssertEqual(sut.controlsView.playbackSpeedButton.alpha, 0.0, "Precondition: speed button should be hidden")
 
 		// Tap fullscreen button - this should NOT toggle controls visibility
 		// The tap should only trigger the fullscreen action, not show controls
-		sut.fullscreenButton.simulateTap()
+		sut.controlsView.fullscreenButton.simulateTap()
 
 		// Also simulate what happens if toggleControlsVisibility was incorrectly called
 		// This represents the bug where tapping fullscreen also triggers toggle
 		// sut.toggleControlsVisibility() // <-- This would be the bug
 
 		// Controls should still be hidden (toggle was NOT called)
-		XCTAssertEqual(sut.playbackSpeedButton.alpha, 0.0, "Expected speed button to remain hidden - fullscreen tap should not toggle controls")
-		XCTAssertEqual(sut.pipButton.alpha, 0.0, "Expected pip button to remain hidden - fullscreen tap should not toggle controls")
-		XCTAssertEqual(sut.fullscreenButton.alpha, 0.0, "Expected fullscreen button to remain hidden - fullscreen tap should not toggle controls")
+		XCTAssertEqual(sut.controlsView.playbackSpeedButton.alpha, 0.0, "Expected speed button to remain hidden - fullscreen tap should not toggle controls")
+		XCTAssertEqual(sut.controlsView.pipButton.alpha, 0.0, "Expected pip button to remain hidden - fullscreen tap should not toggle controls")
+		XCTAssertEqual(sut.controlsView.fullscreenButton.alpha, 0.0, "Expected fullscreen button to remain hidden - fullscreen tap should not toggle controls")
 	}
 
 	func test_landscapeControlsHidden_shouldNotBeInteractive() {
@@ -637,9 +637,9 @@ class VideoPlayerUIIntegrationTests: XCTestCase {
 
 		// When controls are hidden in landscape, buttons should not be interactive
 		// This prevents accidental taps on invisible buttons
-		XCTAssertFalse(sut.fullscreenButton.isUserInteractionEnabled, "Expected fullscreen button to not be interactive when hidden")
-		XCTAssertFalse(sut.pipButton.isUserInteractionEnabled, "Expected pip button to not be interactive when hidden")
-		XCTAssertFalse(sut.playbackSpeedButton.isUserInteractionEnabled, "Expected speed button to not be interactive when hidden")
+		XCTAssertFalse(sut.controlsView.fullscreenButton.isUserInteractionEnabled, "Expected fullscreen button to not be interactive when hidden")
+		XCTAssertFalse(sut.controlsView.pipButton.isUserInteractionEnabled, "Expected pip button to not be interactive when hidden")
+		XCTAssertFalse(sut.controlsView.playbackSpeedButton.isUserInteractionEnabled, "Expected speed button to not be interactive when hidden")
 	}
 
 	func test_landscapeControlsVisible_shouldBeInteractive() {
@@ -651,9 +651,9 @@ class VideoPlayerUIIntegrationTests: XCTestCase {
 		sut.simulateLandscapeOrientation()
 
 		// When controls are visible, buttons should be interactive
-		XCTAssertTrue(sut.fullscreenButton.isUserInteractionEnabled, "Expected fullscreen button to be interactive when visible")
-		XCTAssertTrue(sut.pipButton.isUserInteractionEnabled, "Expected pip button to be interactive when visible")
-		XCTAssertTrue(sut.playbackSpeedButton.isUserInteractionEnabled, "Expected speed button to be interactive when visible")
+		XCTAssertTrue(sut.controlsView.fullscreenButton.isUserInteractionEnabled, "Expected fullscreen button to be interactive when visible")
+		XCTAssertTrue(sut.controlsView.pipButton.isUserInteractionEnabled, "Expected pip button to be interactive when visible")
+		XCTAssertTrue(sut.controlsView.playbackSpeedButton.isUserInteractionEnabled, "Expected speed button to be interactive when visible")
 	}
 
 	func test_portraitAutoHide_thenFullscreenTap_hidesButtonsInLandscape() {
@@ -668,20 +668,20 @@ class VideoPlayerUIIntegrationTests: XCTestCase {
 		sut.simulateControlsAutoHide()
 
 		// In portrait after auto-hide, bottom controls should still be visible
-		XCTAssertEqual(sut.playbackSpeedButton.alpha, 1.0, "Precondition: speed button visible in portrait after auto-hide")
-		XCTAssertEqual(sut.pipButton.alpha, 1.0, "Precondition: pip button visible in portrait after auto-hide")
-		XCTAssertEqual(sut.fullscreenButton.alpha, 1.0, "Precondition: fullscreen button visible in portrait after auto-hide")
+		XCTAssertEqual(sut.controlsView.playbackSpeedButton.alpha, 1.0, "Precondition: speed button visible in portrait after auto-hide")
+		XCTAssertEqual(sut.controlsView.pipButton.alpha, 1.0, "Precondition: pip button visible in portrait after auto-hide")
+		XCTAssertEqual(sut.controlsView.fullscreenButton.alpha, 1.0, "Precondition: fullscreen button visible in portrait after auto-hide")
 
 		// Now tap fullscreen to go to landscape
-		sut.fullscreenButton.simulateTap()
+		sut.controlsView.fullscreenButton.simulateTap()
 		sut.simulateLandscapeOrientation()
 
 		// BUG: The buttons that were visible in portrait should be HIDDEN in landscape
 		// because in landscape, all controls auto-hide together (and they should start hidden
 		// since the player is playing and auto-hide was already triggered)
-		XCTAssertEqual(sut.playbackSpeedButton.alpha, 0.0, "Expected speed button to be hidden in landscape after transition from portrait with auto-hide")
-		XCTAssertEqual(sut.pipButton.alpha, 0.0, "Expected pip button to be hidden in landscape after transition from portrait with auto-hide")
-		XCTAssertEqual(sut.fullscreenButton.alpha, 0.0, "Expected fullscreen button to be hidden in landscape after transition from portrait with auto-hide")
+		XCTAssertEqual(sut.controlsView.playbackSpeedButton.alpha, 0.0, "Expected speed button to be hidden in landscape after transition from portrait with auto-hide")
+		XCTAssertEqual(sut.controlsView.pipButton.alpha, 0.0, "Expected pip button to be hidden in landscape after transition from portrait with auto-hide")
+		XCTAssertEqual(sut.controlsView.fullscreenButton.alpha, 0.0, "Expected fullscreen button to be hidden in landscape after transition from portrait with auto-hide")
 	}
 
 	// MARK: - Helpers
