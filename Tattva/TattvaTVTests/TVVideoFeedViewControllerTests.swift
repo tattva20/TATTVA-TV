@@ -64,7 +64,8 @@ extension TVVideoFeedViewController {
 	}
 
 	func numberOfRenderedPosters() -> Int {
-		collectionView.numberOfItems(inSection: 0)
+		guard collectionView.numberOfSections > 0 else { return 0 }
+		return collectionView.numberOfItems(inSection: 0)
 	}
 
 	private func posterCell(at index: Int) -> TVVideoPosterCell? {

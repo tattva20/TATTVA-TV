@@ -38,6 +38,7 @@ public enum TVVideosUIComposer {
 
 		feedViewController.onRefresh = { adapter.loadFeed() }
 		feedViewController.onLoadMore = { adapter.loadMoreIfAvailable() }
+		feedViewController.onRetry = { adapter.loadFeed() }
 
 		return feedViewController
 	}
