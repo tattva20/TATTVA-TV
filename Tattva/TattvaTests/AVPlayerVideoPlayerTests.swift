@@ -31,6 +31,25 @@ final class AVPlayerVideoPlayerTests: XCTestCase {
 		XCTAssertTrue(sut.player.automaticallyWaitsToMinimizeStalling, "Expected deliberate stall-avoidance rather than the silently-inherited default")
 	}
 
+	func test_reload_recreatesItemFromTheLoadedURL() {
+		let sut = AVPlayerVideoPlayer()
+		let url = anyURL()
+		sut.load(url: url)
+
+		sut.reload()
+
+		let reloadedURL = (sut.player.currentItem?.asset as? AVURLAsset)?.url
+		XCTAssertEqual(reloadedURL, url, "Expected reload to build a fresh item from the last loaded URL")
+	}
+
+	func test_reload_withoutAPriorLoad_isANoOp() {
+		let sut = AVPlayerVideoPlayer()
+
+		sut.reload()
+
+		XCTAssertNil(sut.player.currentItem, "Expected no item when reloading before any load")
+	}
+
 	// MARK: - Helpers
 
 	private func anyURL() -> URL {

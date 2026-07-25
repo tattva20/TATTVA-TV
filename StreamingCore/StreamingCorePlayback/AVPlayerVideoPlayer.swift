@@ -36,9 +36,19 @@ public final class AVPlayerVideoPlayer: VideoPlayer {
 		player.automaticallyWaitsToMinimizeStalling = true
 	}
 
+	private var loadedURL: URL?
+
 	public func load(url: URL) {
+		loadedURL = url
 		let playerItem = AVPlayerItem(url: url)
 		player.replaceCurrentItem(with: playerItem)
+	}
+
+	public func reload() {
+		guard let loadedURL else { return }
+		let playerItem = AVPlayerItem(url: loadedURL)
+		player.replaceCurrentItem(with: playerItem)
+		player.playImmediately(atRate: playbackSpeed)
 	}
 
 	public func play() {
