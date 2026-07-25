@@ -243,6 +243,16 @@ public enum VideoPlayerUIComposer {
 
 		let pipController = PictureInPictureController()
 		pipController.setup(with: controller.playerView)
+		pipController.onRestoreUserInterface = { [weak controller] completion in
+			guard let controller, let navigationController = controller.navigationController else {
+				completion(true)
+				return
+			}
+			if navigationController.topViewController !== controller {
+				navigationController.popToViewController(controller, animated: true)
+			}
+			completion(true)
+		}
 		controller.pipController = pipController
 
 		controller.onPipToggle = { [weak controller] in
