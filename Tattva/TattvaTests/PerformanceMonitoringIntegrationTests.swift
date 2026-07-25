@@ -64,6 +64,24 @@ final class PerformanceMonitoringIntegrationTests: XCTestCase {
 		XCTAssertNotNil(controller.networkBitrateBinding, "Expected a network-driven bitrate binding wired after composition")
 	}
 
+	func test_videoPlayerComposedWith_wiresMemoryPerformanceBinding_whenPublisherProvided() {
+		let subject = PassthroughSubject<MemoryState, Never>()
+
+		let controller = VideoPlayerUIComposer.videoPlayerComposedWith(
+			video: makeVideo(),
+			memoryStatePublisher: subject.eraseToAnyPublisher())
+
+		XCTAssertNotNil(controller.memoryPerformanceCancellable, "Expected a memory-performance binding when a publisher is provided")
+		subject.send(MemoryState(availableBytes: 100, totalBytes: 200, usedBytes: 100, timestamp: Date()))
+		_ = controller
+	}
+
+	func test_videoPlayerComposedWith_omitsMemoryPerformanceBinding_whenNoPublisher() {
+		let controller = VideoPlayerUIComposer.videoPlayerComposedWith(video: makeVideo())
+
+		XCTAssertNil(controller.memoryPerformanceCancellable, "Expected no memory-performance binding without a publisher")
+	}
+
 	func test_networkQualitySignal_isDeliveredToBufferManager() {
 		let bufferManager = BufferManagerSpy()
 		let expectation = expectation(description: "buffer manager receives a network-quality update")
