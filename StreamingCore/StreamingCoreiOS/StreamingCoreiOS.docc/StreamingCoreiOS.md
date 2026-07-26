@@ -32,7 +32,7 @@ StreamingCoreiOS is purely the UIKit UI layer and imports only StreamingCore. Th
 StreamingCoreiOS — UIKit UI; depends inward on StreamingCore
 
 UI Components     ListViewController · VideoCell · PlayerView ·
-                  VideoPlayerViewController · VideoPlayerControlsView ·
+                  VideoPlayerViewController · VideoPlayerControls ·
                   PictureInPictureController · comment cells
     │ depends on
 Platform Adapters AVAudioSessionAdapter · NetworkQualityMonitor
@@ -52,7 +52,7 @@ Complete video player implementation with controls.
 
 - ``VideoPlayerViewController``
 - ``PlayerView``
-- ``VideoPlayerControlsView``
+- ``VideoPlayerControls``
 - ``ControlsVisibilityController``
 
 ### Video List UI
