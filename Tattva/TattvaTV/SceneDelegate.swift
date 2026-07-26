@@ -8,7 +8,7 @@ import StreamingCorePlayback
 final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 	var window: UIWindow?
 
-	private lazy var logger = Logger(subsystem: "com.octavio.rojas.TattvaTV", category: "main")
+	private lazy var logger = Logger(subsystem: "com.tattva.TattvaTV", category: "main")
 
 	private lazy var httpClient: HTTPClient = URLSessionHTTPClient(session: URLSession(configuration: .ephemeral))
 
@@ -31,7 +31,7 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 	private var bufferManagerBinding: AnyCancellable?
 
 	private lazy var structuredLogger: any StreamingCore.Logger =
-		LoggingConfiguration.makeLogger(subsystem: "com.octavio.rojas.TattvaTV")
+		LoggingConfiguration.makeLogger(subsystem: "com.tattva.TattvaTV")
 
 	private lazy var analyticsStore: AnalyticsStore = {
 		let persistent: AnalyticsStore
