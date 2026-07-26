@@ -50,6 +50,7 @@ public enum VideoPlayerUIComposer {
 		// Add analytics decorator if provided
 		if let analytics = analyticsLogger {
 			videoPlayer = AnalyticsVideoPlayerDecorator(decoratee: videoPlayer, analyticsLogger: analytics)
+			Task { await analytics.startSession(videoID: video.id, videoTitle: video.title, deviceInfo: .current(), appVersion: AppVersion.current) }
 		}
 
 		// Wrap with stateful player for state machine control
