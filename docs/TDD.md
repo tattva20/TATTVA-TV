@@ -424,14 +424,16 @@ private func makeItem(id: UUID, title: String) -> (model: Video, json: [String: 
 
 ## Common Pitfalls & Solutions
 
-### 1. Swift 6 @MainActor Deallocation Crash
+### 1. Swift 6 @MainActor Deallocation Crash (historical — fixed in the current toolchain)
 
-**Problem:** malloc crash during @MainActor class deallocation.
+**Problem (historical):** malloc crash during `@MainActor` class deallocation, from a Swift runtime deinit-isolation bug ([swiftlang/swift#87316](https://github.com/swiftlang/swift/issues/87316)).
 
-**Solution:**
-1. Set `SWIFT_DEFAULT_ACTOR_ISOLATION = nonisolated` in build settings
+**Status (verified 2026-07-26):** No longer reproduces on Xcode 26.6 / Swift 6.3.3 (~2,500 dealloc-heavy test executions under `MainActor`-by-default, zero crashes).
+
+**Current standard:**
+1. Keep `SWIFT_DEFAULT_ACTOR_ISOLATION = nonisolated` — the correct Swift 6 default, no longer a crash workaround
 2. Add explicit `@MainActor` where needed
-3. Add `RunLoop.current.run(until: Date())` in tearDown
+3. Keep `RunLoop.current.run(until: Date())` in tearDown — it fixes a **separate** UIKit teardown double-free (see *Malloc Error Prevention*), not the runtime bug above
 
 ### 2. Fire-and-Forget Analytics in Decorators
 
