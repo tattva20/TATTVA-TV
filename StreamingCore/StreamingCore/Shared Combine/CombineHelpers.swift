@@ -47,24 +47,3 @@ extension DispatchQueue {
         }
     }
 }
-
-public extension VideoImageDataLoader {
-    typealias Publisher = AnyPublisher<Data, Error>
-
-    func loadImageDataPublisher(from url: URL) -> Publisher {
-        Deferred {
-            Future { completion in
-                completion(Result { try self.loadImageData(from: url) })
-            }
-        }
-        .eraseToAnyPublisher()
-    }
-}
-
-public extension Publisher where Output == Data {
-    func caching(to cache: VideoImageDataCache, for url: URL) -> AnyPublisher<Output, Failure> {
-        handleEvents(receiveOutput: { data in
-            try? cache.save(data, for: url)
-        }).eraseToAnyPublisher()
-    }
-}
