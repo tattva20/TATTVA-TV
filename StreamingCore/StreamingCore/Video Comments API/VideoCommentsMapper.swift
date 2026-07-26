@@ -34,14 +34,10 @@ public final class VideoCommentsMapper {
 		let decoder = JSONDecoder()
 		decoder.dateDecodingStrategy = .iso8601
 
-		guard isOK(response), let root = try? decoder.decode(Root.self, from: data) else {
+		guard response.is2xx, let root = try? decoder.decode(Root.self, from: data) else {
 			throw Error.invalidData
 		}
 
 		return root.comments
-	}
-
-	private static func isOK(_ response: HTTPURLResponse) -> Bool {
-		(200...299).contains(response.statusCode)
 	}
 }
