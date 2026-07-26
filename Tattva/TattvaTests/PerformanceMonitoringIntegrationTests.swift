@@ -27,7 +27,7 @@ final class PerformanceMonitoringIntegrationTests: XCTestCase {
 
 		let controller = VideoPlayerUIComposer.videoPlayerComposedWith(video: video)
 
-		XCTAssertNotNil(controller.performanceAdapter, "Expected VideoPlayerViewController to have a performance adapter after composition")
+		XCTAssertNotNil(controller.playbackCollaborators?.performanceAdapter, "Expected VideoPlayerViewController to have a performance adapter after composition")
 	}
 
 	func test_videoPlayerComposedWith_startsPerformanceMonitoringOnCreation() {
@@ -35,7 +35,7 @@ final class PerformanceMonitoringIntegrationTests: XCTestCase {
 
 		let controller = VideoPlayerUIComposer.videoPlayerComposedWith(video: video)
 
-		XCTAssertTrue(controller.performanceAdapter?.isObserving == true, "Expected performance monitoring to be started after composition")
+		XCTAssertTrue(controller.playbackCollaborators?.performanceAdapter.isObserving == true, "Expected performance monitoring to be started after composition")
 	}
 
 	func test_videoPlayerComposedWith_wiresBufferAdapter_whenBufferManagerProvided() {
@@ -45,7 +45,7 @@ final class PerformanceMonitoringIntegrationTests: XCTestCase {
 			video: video,
 			bufferManager: AdaptiveBufferManager())
 
-		XCTAssertNotNil(controller.bufferAdapter, "Expected a buffer adapter wired to the player when a buffer manager is provided")
+		XCTAssertNotNil(controller.playbackCollaborators?.bufferAdapter, "Expected a buffer adapter wired to the player when a buffer manager is provided")
 	}
 
 	func test_videoPlayerComposedWith_omitsBufferAdapter_whenNoBufferManager() {
@@ -53,7 +53,7 @@ final class PerformanceMonitoringIntegrationTests: XCTestCase {
 
 		let controller = VideoPlayerUIComposer.videoPlayerComposedWith(video: video)
 
-		XCTAssertNil(controller.bufferAdapter, "Expected no buffer adapter when no buffer manager is provided")
+		XCTAssertNil(controller.playbackCollaborators?.bufferAdapter, "Expected no buffer adapter when no buffer manager is provided")
 	}
 
 	func test_videoPlayerComposedWith_wiresNetworkBitrateBinding() {
@@ -61,7 +61,7 @@ final class PerformanceMonitoringIntegrationTests: XCTestCase {
 
 		let controller = VideoPlayerUIComposer.videoPlayerComposedWith(video: video)
 
-		XCTAssertNotNil(controller.networkBitrateBinding, "Expected a network-driven bitrate binding wired after composition")
+		XCTAssertNotNil(controller.playbackCollaborators?.networkBitrateBinding, "Expected a network-driven bitrate binding wired after composition")
 	}
 
 	func test_videoPlayerComposedWith_wiresMemoryPerformanceBinding_whenPublisherProvided() {
@@ -71,7 +71,7 @@ final class PerformanceMonitoringIntegrationTests: XCTestCase {
 			video: makeVideo(),
 			memoryStatePublisher: subject.eraseToAnyPublisher())
 
-		XCTAssertNotNil(controller.memoryPerformanceCancellable, "Expected a memory-performance binding when a publisher is provided")
+		XCTAssertNotNil(controller.playbackCollaborators?.memoryPerformanceCancellable, "Expected a memory-performance binding when a publisher is provided")
 		subject.send(MemoryState(availableBytes: 100, totalBytes: 200, usedBytes: 100, timestamp: Date()))
 		_ = controller
 	}
@@ -79,7 +79,7 @@ final class PerformanceMonitoringIntegrationTests: XCTestCase {
 	func test_videoPlayerComposedWith_omitsMemoryPerformanceBinding_whenNoPublisher() {
 		let controller = VideoPlayerUIComposer.videoPlayerComposedWith(video: makeVideo())
 
-		XCTAssertNil(controller.memoryPerformanceCancellable, "Expected no memory-performance binding without a publisher")
+		XCTAssertNil(controller.playbackCollaborators?.memoryPerformanceCancellable, "Expected no memory-performance binding without a publisher")
 	}
 
 	func test_networkQualitySignal_isDeliveredToBufferManager() {
@@ -103,7 +103,7 @@ final class PerformanceMonitoringIntegrationTests: XCTestCase {
 
 		autoreleasepool {
 			let controller = VideoPlayerUIComposer.videoPlayerComposedWith(video: video)
-			weakAdapter = controller.performanceAdapter
+			weakAdapter = controller.playbackCollaborators?.performanceAdapter
 			XCTAssertNotNil(weakAdapter)
 		}
 
