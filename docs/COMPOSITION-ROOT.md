@@ -86,16 +86,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         MemoryMonitorFactory.makeSystemMemoryMonitor()
     }()
 
-    lazy var resourceCleanupCoordinator: ResourceCleanupCoordinator = {
-        let videoCleaner = VideoCacheCleaner(deleteAction: { [store] in
-            try store.deleteCachedVideos()
-        })
-        let imageCleaner = ImageCacheCleaner(clearAction: { return 0 })
-        return ResourceCleanupCoordinator(
-            cleaners: [videoCleaner, imageCleaner],
-            memoryMonitor: memoryMonitor
-        )
-    }()
+    // Built through the shared helper both SceneDelegates call (VideoCacheCleaner
+    // is the only registered cleaner; there is no image-cache cleaner).
+    lazy var resourceCleanupCoordinator: ResourceCleanupCoordinator =
+        ResourceManagementComposer.makeCoordinator(
+            deleteCachedVideos: { [store] in try store.deleteCachedVideos() },
+            memoryMonitor: memoryMonitor)
 
     // MARK: - Buffer Management
     lazy var bufferManager: AdaptiveBufferManager = {
