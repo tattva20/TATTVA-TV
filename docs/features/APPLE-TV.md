@@ -37,15 +37,15 @@ instead (see [Player](#player)).
 
 | Surface | Type | Built on |
 |---------|------|----------|
-| Feed | `TVVideoFeedViewController` | `UICollectionViewController` + diffable data source + focus engine |
+| Feed | `TVVideosViewController` | `UICollectionViewController` + diffable data source + focus engine |
 | Poster cell | `TVVideoPosterCell` | `UICollectionViewCell` with focus-driven scaling |
 | Player | `TVPlayerViewController` | `AVPlayerViewController` |
-| Comments | `TVCommentsViewController` | `UICollectionViewController` + `LoadResourcePresenter` |
+| Info panel | `TVVideoInfoViewController` | `customInfoViewControllers` (title/duration/description) |
 | Composition | `SceneDelegate` | `UINavigationController` root |
 
 ## Feed
 
-`TVVideoFeedViewController` is a `UICollectionViewController` backed by a
+`TVVideosViewController` is a `UICollectionViewController` backed by a
 `UICollectionViewDiffableDataSource`. Each item is driven by a `TVCellController`
 (a `Hashable`/`Equatable` value type wrapping an id + a `UICollectionViewDataSource`),
 mirroring the iOS `CellController` pattern.
@@ -56,10 +56,10 @@ mirroring the iOS `CellController` pattern.
 - **Images.** `TVVideoCellController` requests its poster lazily through the shared
   image-loader closure, exactly as the iOS feed does.
 - **Pagination.** Load-more is triggered from `collectionView(_:willDisplay:forItemAt:)`
-  on the last item, calling the feed's `onLoadMore`. `TVFeedLoaderPresentationAdapter`
+  on the last item, calling the feed's `onLoadMore`. `TVVideosLoaderPresentationAdapter`
   accumulates pages from `Paginated<Video>` and re-renders the snapshot.
 
-Composition: `TVVideosUIComposer.feedComposedWith(videoLoader:imageLoader:selection:)`.
+Composition: `TVVideosUIComposer.videosComposedWith(videoLoader:imageLoader:selection:)`.
 
 ## Player
 
@@ -75,36 +75,26 @@ AVPlayerVideoPlayer
   → StatefulVideoPlayer  (+ PlaybackCoordinator, VideoPlayerPerformanceAdapter)
 ```
 
-The player sets `self.player` and exposes comments through the native
-`customInfoViewControllers` slot, so comments appear in the transport bar's Info
-panel beside the video.
+The player sets `self.player` and surfaces `TVVideoInfoViewController` through the
+native `customInfoViewControllers` slot, so the video's title, duration, and
+description appear in the transport bar's Info panel.
 
 **Lifetime.** `PlaybackCoordinator` has no `deinit`-based teardown, so
 `TVPlayerViewController.viewDidDisappear(_:)` calls `coordinator.stop()`
 explicitly to release the playback resources when the screen is dismissed.
 
-## Comments
+## Info panel
 
-`TVCommentsViewController` renders the same `VideoCommentsViewModel` the iOS app
-does, driven by the real shared `LoadResourcePresenter`:
-
-- It conforms to `ResourceView`, `ResourceLoadingView`, and `ResourceErrorView`,
-  with `TVCommentCell` displaying each comment.
-- Loading shows an activity indicator; empty shows "No comments yet"; failure
-  shows the error message.
-- Because `ResourceLoadingViewModel`'s initializer is internal, the composer uses
-  the production `LoadResourcePresenter` (mapper `{ VideoCommentsPresenter.map($0) }`)
-  rather than reconstructing view models by hand. `TVWeakRefVirtualProxy` bridges
-  the presenter to the view controller for all three view protocols while breaking
-  the retain cycle.
-
-Composition: `TVCommentsUIComposer`.
+Comments are **iOS-only**. In their place tvOS surfaces `TVVideoInfoViewController`
+through `AVPlayerViewController.customInfoViewControllers`, showing the video's
+title, duration, and description in the native transport Info panel.
 
 ## Composition root
 
 `SceneDelegate` roots a `UINavigationController` on the feed. Selecting a poster
-calls `showPlayer`, which builds the comments controller via
-`TVCommentsUIComposer` and pushes a `TVPlayerViewController(video:comments:)`.
+calls `showPlayer`, which builds a `TVVideoInfoViewController` and pushes a
+`TVPlayerViewController` (video + info panel + analytics/logging/buffer/memory
+collaborators).
 
 ## Brand assets
 

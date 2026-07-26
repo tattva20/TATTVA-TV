@@ -137,9 +137,8 @@ Mirrors the iOS root, minus the custom UI. Depends on `StreamingCore` + `Streami
 TattvaTV/  (tvOS composition root)  → StreamingCore · StreamingCorePlayback
 ├── AppDelegate · SceneDelegate   composes VideoService into the tvOS feed (TVVideosUIComposer);
 │                                 presents the player on video selection
-├── TVVideoFeedViewController · TVVideosUIComposer · TVVideoPosterCell ·
-│   TVVideoCellController · TVFeedLoaderPresentationAdapter   feed + load-more pagination
-├── TVCommentsViewController · TVCommentsUIComposer · TVCommentCell   comments beside the player
+├── TVVideosViewController · TVVideosUIComposer · TVVideoPosterCell ·
+│   TVVideoCellController · TVVideosLoaderPresentationAdapter   feed + load-more pagination
 ├── TVPlayerComposer              builds AVPlayerVideoPlayer → Logging → Analytics →
 │                                 StatefulVideoPlayer + PlaybackCoordinator (the reused chain)
 └── TVPlayerViewController        subclasses AVPlayerViewController (native 10-foot transport)
@@ -331,19 +330,14 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let httpClient = URLSessionHTTPClient()
         let store = CoreDataVideoStore()
 
-        // Create use cases
-        let remoteLoader = RemoteVideoLoader(client: httpClient, url: videosURL)
-        let localLoader = LocalVideoLoader(store: store)
-
-        // Compose with decorators
-        let cachedLoader = VideoLoaderCacheDecorator(
-            decoratee: remoteLoader,
-            cache: localLoader
-        )
+        // VideoService composes remote load with cache write-through + local fallback
+        let videoService = VideoService(httpClient: httpClient, store: store, logger: logger)
 
         // Create UI
-        let videosController = VideosUIComposer.compose(
-            loader: cachedLoader
+        let videosController = VideosUIComposer.videosComposedWith(
+            videoLoader: videoService.loadRemoteVideosWithLocalFallback,
+            imageLoader: videoService.loadLocalImageWithRemoteFallback,
+            selection: showVideoPlayer
         )
 
         // Set as root

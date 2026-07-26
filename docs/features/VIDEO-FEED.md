@@ -211,12 +211,12 @@ The video feed also ships on tvOS via the `TattvaTV` target, reusing the same `S
 
 **Files:** `Tattva/TattvaTV/`
 
-- `TVVideoFeedViewController.swift` - Collection view with `onRefresh` / `onLoadMore` pagination
+- `TVVideosViewController.swift` - Collection view with `onRefresh` / `onLoadMore` pagination
 - `TVVideoPosterCell.swift` - Poster cell for the tvOS grid
 - `TVVideoCellController.swift` - Cell controller binding `VideoViewModel`
 - `TVVideosUIComposer.swift` - Composes the feed with a paginated loader
 
-Load-more pagination is covered by `TVVideoFeedPaginationTests` and `TVVideoFeedLoaderIntegrationTests`.
+Load-more pagination is covered by `TVVideosPaginationTests` and `TVVideosLoaderIntegrationTests`.
 
 See [Apple TV](APPLE-TV.md) for the full tvOS surface.
 
@@ -239,34 +239,18 @@ flowchart LR
     Remote -->|on failure| Fallback
 ```
 
-### Video Loader Cache Decorator
+### Remote-with-local-fallback (VideoService)
+
+Caching and fallback are composed inside `VideoService.loadRemoteVideosWithLocalFallback()` (`StreamingCorePlayback`) rather than in standalone decorator/composite types. A remote success writes through to the local store; a remote failure falls back to the cached page:
 
 ```swift
-public final class VideoLoaderCacheDecorator: VideoLoader {
-    private let decoratee: VideoLoader
-    private let cache: VideoCache
-
-    public func load() async throws -> [Video] {
-        let videos = try await decoratee.load()
-        try cache.save(videos)  // Cache on success
-        return videos
-    }
-}
-```
-
-### Fallback Composite
-
-```swift
-public final class VideoLoaderWithFallbackComposite: VideoLoader {
-    private let primary: VideoLoader
-    private let fallback: VideoLoader
-
-    public func load() async throws -> [Video] {
-        do {
-            return try await primary.load()
-        } catch {
-            return try await fallback.load()  // Use cache on failure
-        }
+public func loadRemoteVideosWithLocalFallback() async throws -> Paginated<Video> {
+    do {
+        let items = try await loadRemoteVideos()
+        try? localVideoLoader.save(items)                        // write-through on success
+        return makeFirstPage(items: items)
+    } catch {
+        return makeFirstPage(items: try localVideoLoader.load()) // local fallback
     }
 }
 ```

@@ -494,7 +494,7 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 }
 ```
 
-The tvOS `SceneDelegate` mirrors this, wiring the same `VideoService` through the dedicated `TVVideosUIComposer`, `TVPlayerComposer`, and `TVCommentsUIComposer` (see [Apple TV](features/APPLE-TV.md)).
+The tvOS `SceneDelegate` mirrors this, wiring the same `VideoService` through the dedicated `TVVideosUIComposer` and `TVPlayerComposer` (see [Apple TV](features/APPLE-TV.md)). Comments are an iOS-only surface.
 
 **Benefits:**
 - Single source of truth for object graph
@@ -511,7 +511,7 @@ flowchart TB
     subgraph CR["Composition Root (SceneDelegate) — Creates:"]
         F["Factory<br/><i>(Composer)</i>"]
         C["Composite<br/><i>(Logger)</i>"]
-        D["Decorator<br/><i>(Caching)</i>"]
+        D["Decorator<br/><i>(Player logging/analytics)</i>"]
     end
     AD["Adapter<br/><i>(AVPlayer &rarr; StateMachine)</i>"]
     ST["Strategy<br/><i>(Bitrate, Preload)</i>"]

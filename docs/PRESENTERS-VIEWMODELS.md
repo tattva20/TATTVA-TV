@@ -296,7 +296,7 @@ public struct VideoViewModel {
 
 **File:** `StreamingCore/StreamingCore/Video Comments Presentation/VideoCommentsPresenter.swift`
 
-Provides the localized comments title and maps `VideoComment` domain models to display view models, converting `createdAt` into a relative date string via `RelativeDateTimeFormatter`. Consumed by both iOS (`VideoCommentsUIComposer`) and tvOS (`TVCommentsUIComposer`).
+Provides the localized comments title and maps `VideoComment` domain models to display view models, converting `createdAt` into a relative date string via `RelativeDateTimeFormatter`. Consumed by the iOS `VideoCommentsUIComposer` (comments are an iOS-only surface).
 
 ```swift
 public struct VideoCommentsViewModel: Sendable {

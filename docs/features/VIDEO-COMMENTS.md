@@ -101,7 +101,7 @@ public final class VideoCommentsMapper {
 
 **File:** `StreamingCore/StreamingCore/Video Comments Presentation/VideoCommentsPresenter.swift`
 
-`VideoCommentsPresenter`, `VideoCommentsViewModel`, and `VideoCommentViewModel` live in `StreamingCore` and are platform-agnostic - the iOS `VideoCommentCell` path and the tvOS `TVCommentsViewController`/`TVCommentCell` path share this same presentation layer.
+`VideoCommentsPresenter`, `VideoCommentsViewModel`, and `VideoCommentViewModel` live in `StreamingCore` and are platform-agnostic - the iOS `VideoCommentCell` path uses this presentation layer. Comments are an iOS-only surface (tvOS has no comments UI).
 
 Uses **Dependency Rejection** - calendar and locale as parameters, not injected:
 
@@ -358,17 +358,9 @@ func test_map_deliversCommentsOn200HTTPResponse() throws {
 
 ---
 
-## tvOS
+## Platform scope
 
-The tvOS app renders comments through a separate UI layer that reuses the shared `StreamingCore` presentation (see above):
-
-- **`TVCommentsViewController`** - `UICollectionViewController` backed by an `NSDiffableDataSourceSnapshot`, with a loading `UIActivityIndicatorView`, an empty state (`"No comments yet"`), and a `ResourceErrorView` error state.
-- **`TVCommentsUIComposer`** / **`TVCommentCell`** - composition and cell for the tvOS surface.
-- Wired via `TVPlayerViewController`, which surfaces comments as an `AVPlayerViewController` info panel (`customInfoViewControllers`) alongside the player rather than below it.
-
-**Files:** `Tattva/TattvaTV/TVCommentsViewController.swift`, `TVCommentsUIComposer.swift`, `TVCommentCell.swift`
-
-See [Apple TV](APPLE-TV.md) for the full tvOS surface.
+Comments are an **iOS-only** surface. The tvOS app has no comments UI; its player-adjacent info panel (`TVVideoInfoViewController`, surfaced via `AVPlayerViewController.customInfoViewControllers`) shows the video's title, duration, and description. See [Apple TV](APPLE-TV.md).
 
 ---
 
