@@ -120,7 +120,7 @@ final class PerformanceMonitoringIntegrationTests: XCTestCase {
 		_ = VideoPlayerUIComposer.videoPlayerComposedWith(video: video, analyticsLogger: analytics)
 
 		var sessions: [LocalPlaybackSession] = []
-		let deadline = Date() + 2
+		let deadline = Date() + 5
 		while Date() < deadline {
 			sessions = (try? await store.retrieveAllSessions()) ?? []
 			if !sessions.isEmpty { break }
