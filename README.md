@@ -33,6 +33,7 @@ For a deeper understanding of the philosophies, patterns, and principles behind 
 | [State Machines](docs/STATE-MACHINES.md) | Pure state machine design for video playback |
 | [Design Patterns](docs/DESIGN-PATTERNS.md) | Decorator, Composite, Adapter, Strategy patterns |
 | [Reactive Programming](docs/REACTIVE-PROGRAMMING.md) | Combine framework patterns and best practices |
+| [ADR 0001: Combine for the Reactive Layer](docs/adr/0001-combine-for-the-reactive-layer.md) | Why Combine — not Observation or AsyncStream — owns the reactive layer |
 | [Performance](docs/PERFORMANCE.md) | Bitrate adaptation, preloading, and memory management |
 
 ### Feature Documentation
