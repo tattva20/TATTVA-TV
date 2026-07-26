@@ -203,8 +203,8 @@ CI · .github/workflows/ci.yml
 | Pattern | Usage |
 |---------|-------|
 | **Composition Root** | All dependencies wired in `SceneDelegate` |
-| **Decorator** | `VideoLoaderCacheDecorator` adds caching |
-| **Composite** | `VideoLoaderComposite` for fallback loading |
+| **Decorator** | `LoggingVideoPlayerDecorator` / `AnalyticsVideoPlayerDecorator` wrap the player; `LoggingAnalyticsStore` wraps the analytics store |
+| **Facade** | `VideoService` composes remote load with cache write-through + local fallback (`loadRemoteVideosWithLocalFallback`) |
 | **Adapter** | Connects domain to presentation layer |
 | **Factory** | Creates complex object graphs |
 | **Strategy** | Interchangeable loading strategies |
@@ -252,8 +252,8 @@ Each class has ONE reason to change:
 ```swift
 // Good - Separate responsibilities
 RemoteVideoLoader    // Only fetches from network
-LocalVideoLoader     // Only fetches from cache
-VideoLoaderCacheDecorator  // Only handles caching logic
+LocalVideoLoader     // Only fetches from / saves to cache
+VideoService         // Composes remote + local fallback (facade)
 ```
 
 ### Open/Closed (O)
@@ -261,10 +261,10 @@ VideoLoaderCacheDecorator  // Only handles caching logic
 Extend behavior without modifying existing code using the Decorator pattern:
 
 ```swift
-// Adding caching without changing RemoteVideoLoader
-let cachedLoader = VideoLoaderCacheDecorator(
-    decoratee: remoteLoader,
-    cache: localCache
+// Adding logging + analytics without changing the base player
+let player: VideoPlayer = AnalyticsVideoPlayerDecorator(
+    decoratee: LoggingVideoPlayerDecorator(decoratee: basePlayer, logger: logger),
+    analyticsLogger: analytics
 )
 ```
 
@@ -280,7 +280,6 @@ protocol VideoLoader {
 // All these can be used interchangeably:
 let loader: VideoLoader = RemoteVideoLoader(...)     // Production
 let loader: VideoLoader = LocalVideoLoader(...)      // Offline
-let loader: VideoLoader = VideoLoaderCacheDecorator(...) // Cached
 let loader: VideoLoader = VideoLoaderSpy()           // Testing
 ```
 

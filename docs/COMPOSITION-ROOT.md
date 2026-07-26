@@ -51,7 +51,7 @@ flowchart TB
 
 > The iOS `SceneDelegate` described here has a parallel composition root in the
 > `TattvaTV` target (its own `SceneDelegate` plus `TVVideosUIComposer`,
-> `TVPlayerComposer`, and `TVCommentsUIComposer`). See [Apple TV](features/APPLE-TV.md).
+> and `TVPlayerComposer`; comments are iOS-only). See [Apple TV](features/APPLE-TV.md).
 
 ---
 

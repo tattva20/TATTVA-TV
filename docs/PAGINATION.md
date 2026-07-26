@@ -149,7 +149,7 @@ private func makePage(items: [Video], last: Video?) -> Paginated<Video> {
 ```
 
 The same `VideoService` and `Paginated` chain drive pagination on both platforms: the iOS feed and
-the tvOS feed (whose `TVFeedLoaderPresentationAdapter.loadMoreIfAvailable()` is wired through
+the tvOS feed (whose `TVVideosLoaderPresentationAdapter.loadMoreIfAvailable()` is wired through
 `TVVideosUIComposer.onLoadMore`). See [Apple TV](features/APPLE-TV.md) for the tvOS surface.
 
 Key points:

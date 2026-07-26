@@ -535,8 +535,7 @@ private func releaseCellForReuse() {
 
 The tvOS app realizes the same pattern over `UICollectionView` instead of `UITableView`. `TVCellController` (`Tattva/TattvaTV/TVCellController.swift`) is a struct with the same `id` / `Equatable` / `Hashable` design as `CellController`, wrapping `UICollectionViewDataSource` and extracting optional `UICollectionViewDelegate` / `UICollectionViewDataSourcePrefetching` via protocol conformance.
 
-`TVVideoCellController` (`Tattva/TattvaTV/TVVideoCellController.swift`) is the `UICollectionView` analogue of `VideoCellController`, implementing `collectionView(_:cellForItemAt:)` and driving image loading. `TVCommentsViewController` uses a `UICollectionViewDiffableDataSource` for comment display.
-
+`TVVideoCellController` (`Tattva/TattvaTV/TVVideoCellController.swift`) is the `UICollectionView` analogue of `VideoCellController`, implementing `collectionView(_:cellForItemAt:)` and driving image loading.
 See [Apple TV](features/APPLE-TV.md) for the full tvOS composition.
 
 ---
