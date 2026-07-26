@@ -1,6 +1,7 @@
 import XCTest
 import Combine
 import StreamingCore
+import StreamingCorePlayback
 @testable import Tattva
 
 @MainActor

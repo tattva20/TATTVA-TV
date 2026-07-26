@@ -12,6 +12,8 @@ public enum TVPlayerComposer {
 		let performanceAdapter: VideoPlayerPerformanceAdapter
 		let bufferAdapter: AVPlayerBufferAdapterConcrete?
 		let networkBinding: TVNetworkBitrateBinding?
+		let performanceAlertLogging: PerformanceAlertLoggingBinding?
+		let memoryPerformanceCancellable: AnyCancellable?
 	}
 
 	public static func playerComposedWith(
@@ -19,7 +21,8 @@ public enum TVPlayerComposer {
 		basePlayer: AVPlayerVideoPlayer = AVPlayerVideoPlayer(),
 		analyticsLogger: PlaybackAnalyticsLogger? = nil,
 		structuredLogger: (any StreamingCore.Logger)? = nil,
-		bufferManager: (any BufferManager)? = nil
+		bufferManager: (any BufferManager)? = nil,
+		memoryStatePublisher: AnyPublisher<MemoryState, Never>? = nil
 	) -> Bundle {
 		var videoPlayer: VideoPlayer = basePlayer
 
@@ -34,11 +37,30 @@ public enum TVPlayerComposer {
 		let stateMachine = DefaultPlaybackStateMachine()
 		let statefulPlayer = StatefulVideoPlayer(decoratee: videoPlayer, stateMachine: stateMachine)
 
+		let performanceService = PlaybackPerformanceService()
 		let performanceAdapter = VideoPlayerPerformanceAdapter(
-			performanceService: PlaybackPerformanceService(),
+			performanceService: performanceService,
 			bandwidthEstimator: NetworkBandwidthEstimator()
 		)
 		performanceAdapter.startMonitoring(sessionID: UUID())
+
+		var performanceAlertLogging: PerformanceAlertLoggingBinding?
+		if let structuredLogger {
+			performanceAlertLogging = PerformanceAlertLoggingBinding(
+				alerts: performanceService.alertPublisher,
+				logger: structuredLogger)
+		}
+
+		var memoryPerformanceCancellable: AnyCancellable?
+		if let memoryStatePublisher {
+			memoryPerformanceCancellable = memoryStatePublisher
+				.receive(on: RunLoop.main)
+				.sink { [weak performanceAdapter] state in
+					performanceAdapter?.updateMemory(
+						usedMB: state.usedMB,
+						pressure: state.pressureLevel(thresholds: .default))
+				}
+		}
 
 		let coordinator = PlaybackCoordinator(
 			player: basePlayer.player,
@@ -78,7 +100,9 @@ public enum TVPlayerComposer {
 			coordinator: coordinator,
 			performanceAdapter: performanceAdapter,
 			bufferAdapter: bufferAdapter,
-			networkBinding: TVNetworkBitrateBinding(monitor: networkMonitor, cancellable: bitrateCancellable)
+			networkBinding: TVNetworkBitrateBinding(monitor: networkMonitor, cancellable: bitrateCancellable),
+			performanceAlertLogging: performanceAlertLogging,
+			memoryPerformanceCancellable: memoryPerformanceCancellable
 		)
 	}
 }

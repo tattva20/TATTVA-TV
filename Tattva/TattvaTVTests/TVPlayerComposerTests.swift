@@ -62,6 +62,28 @@ final class TVPlayerComposerTests: XCTestCase {
 			"Expected the composed tvOS player to log through the injected logging decorator")
 	}
 
+	func test_playerComposedWith_wiresMemoryPerformanceBinding_whenPublisherProvided() {
+		let subject = PassthroughSubject<MemoryState, Never>()
+
+		let bundle = TVPlayerComposer.playerComposedWith(
+			video: makeVideo(),
+			memoryStatePublisher: subject.eraseToAnyPublisher())
+
+		XCTAssertNotNil(bundle.memoryPerformanceCancellable, "Expected a memory-performance binding when a publisher is provided")
+	}
+
+	func test_playerComposedWith_omitsMemoryPerformanceBinding_whenNoPublisher() {
+		let bundle = TVPlayerComposer.playerComposedWith(video: makeVideo())
+
+		XCTAssertNil(bundle.memoryPerformanceCancellable, "Expected no memory-performance binding without a publisher")
+	}
+
+	func test_playerComposedWith_wiresPerformanceAlertLogging_whenStructuredLoggerProvided() {
+		let bundle = TVPlayerComposer.playerComposedWith(video: makeVideo(), structuredLogger: LoggerSpy())
+
+		XCTAssertNotNil(bundle.performanceAlertLogging, "Expected a performance-alert logging binding when a structured logger is provided")
+	}
+
 	// MARK: - Helpers
 
 	@discardableResult
