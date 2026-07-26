@@ -181,12 +181,17 @@ Main controller managing:
 - Fullscreen transitions
 - Orientation handling
 
-### VideoPlayerControlsView
+### VideoPlayerControls
 
-**File:** `StreamingCoreiOS/Video UI/Views/VideoPlayerControlsView.swift`
+**File:** `StreamingCoreiOS/Video UI/Views/VideoPlayerControls.swift`
+
+Owns and configures the control widgets and routes their target/action to
+callbacks. It is not a view — `VideoPlayerViewController` parents each widget
+onto its own root view — so it is an `NSObject` (required for the widgets'
+target/action dispatch), not a `UIView`.
 
 ```swift
-public final class VideoPlayerControlsView: UIView {
+public final class VideoPlayerControls: NSObject {
     // Playback controls
     public let playPauseButton: UIButton
     public let seekForwardButton: UIButton

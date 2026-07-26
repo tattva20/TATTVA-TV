@@ -106,7 +106,7 @@ Contains all iOS-specific UI code:
 StreamingCoreiOS/  — UIKit  → depends on StreamingCore
 ├── Shared UI/             ListViewController (generic list) · shimmer/animation helpers
 ├── Video UI/              VideoCell · PlayerView · VideoPlayerViewController ·
-│                          VideoPlayerControlsView · PictureInPictureController ·
+│                          VideoPlayerControls · PictureInPictureController ·
 │                          ControlsVisibilityController · AVAudioSessionAdapter
 ├── Video Comments UI/     VideoCommentCell · VideoCommentCellController
 └── Video Performance iOS/ NetworkQualityMonitor

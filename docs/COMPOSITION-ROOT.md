@@ -205,7 +205,6 @@ public enum VideoPlayerUIComposer {
         let statefulPlayer = StatefulVideoPlayer(decoratee: videoPlayer, stateMachine: stateMachine)
 
         let controller = VideoPlayerViewController(viewModel: viewModel, player: statefulPlayer)
-        controller.statefulPlayer = statefulPlayer
 
         // Wire performance monitoring, a PlaybackCoordinator, and PiP
         let performanceAdapter = VideoPlayerPerformanceAdapter(
@@ -213,13 +212,20 @@ public enum VideoPlayerUIComposer {
             bandwidthEstimator: NetworkBandwidthEstimator()
         )
         performanceAdapter.startMonitoring(sessionID: UUID())
-        controller.performanceAdapter = performanceAdapter
 
         if let commentsController {
             controller.setCommentsController(commentsController)
         }
 
         // ...fullscreen wiring, PlaybackCoordinator.start(), PictureInPictureController setup...
+
+        // Collaborators that must live as long as the controller are held in one
+        // PlaybackCollaborators, attached via a single associated object.
+        controller.playbackCollaborators = PlaybackCollaborators(
+            statefulPlayer: statefulPlayer,
+            performanceAdapter: performanceAdapter
+            // ...coordinator, bufferAdapter, networkBitrateBinding, memory + alert bindings
+        )
 
         return controller
     }
