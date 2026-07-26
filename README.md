@@ -356,14 +356,22 @@ xcodebuild test \
   -scheme Tattva \
   -destination 'platform=iOS Simulator,name=iPhone 17'
 
-# Run with ThreadSanitizer (CI mode)
+# CI_iOS — full functional suite, NO ThreadSanitizer (a TSan'd CI_iOS hangs the sim)
 xcodebuild clean build test \
   -workspace Tattva.xcworkspace \
   -scheme "CI_iOS" \
   CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO \
   -sdk iphonesimulator \
-  -destination "platform=iOS Simulator,name=iPhone 17" \
-  -enableThreadSanitizer YES
+  -destination "platform=iOS Simulator,name=iPhone 17,OS=26.5" \
+  ONLY_ACTIVE_ARCH=YES
+
+# CI_macOS — ThreadSanitizer runs here (StreamingCore tests, no simulator)
+xcodebuild clean build test \
+  -workspace Tattva.xcworkspace \
+  -scheme "CI_macOS" \
+  CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO \
+  -sdk macosx -destination "platform=macOS" \
+  -enableThreadSanitizer YES ONLY_ACTIVE_ARCH=YES
 ```
 
 ---
