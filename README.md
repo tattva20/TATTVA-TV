@@ -891,23 +891,22 @@ final class ResourceCleanerSpy: ResourceCleaner, @unchecked Sendable {
 
 This section documents solutions to persistent issues discovered during development.
 
-### 1. Swift 6 @MainActor Deallocation Crash
+### 1. Swift 6 @MainActor Deallocation Crash (historical — fixed in the current toolchain)
 
-**Problem:** malloc crash at fixed address during @MainActor class deallocation.
+**Problem (historical):** malloc crash at a fixed address during `@MainActor` class deallocation.
 
 **Error:**
 ```
 malloc: *** error for object 0x262c5a6f0: pointer being freed was not allocated
 ```
 
-**Root Cause:** A known Swift runtime bug in deinit isolation — a `@MainActor`-isolated `deinit` can run on the wrong executor and crash inside `swift_task_deinitOnExecutorImpl` (see [swiftlang/swift#87316](https://github.com/swiftlang/swift/issues/87316)).
+**Root Cause:** A Swift runtime bug in deinit isolation — a `@MainActor`-isolated `deinit` could run on the wrong executor and crash inside `swift_task_deinitOnExecutorImpl` (see [swiftlang/swift#87316](https://github.com/swiftlang/swift/issues/87316)).
 
-**Solution:**
-1. Set `SWIFT_DEFAULT_ACTOR_ISOLATION = nonisolated` in build settings
-2. Add explicit `@MainActor` to classes that need main thread access
-3. Add `RunLoop.current.run(until: Date())` in test tearDown
+**Status (verified 2026-07-26):** No longer reproduces on Xcode 26.6 / Swift 6.3.3. Flipping `SWIFT_DEFAULT_ACTOR_ISOLATION` to `MainActor` — which makes every class `@MainActor` by default, the precondition for this bug — and running the dealloc-heavy suites ~2,500 times (828 iOS tests × 3 iterations, plus the full tvOS suite) produced **zero** crashes. The runtime bug appears fixed in this toolchain.
 
-**DO NOT:** Set `SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor` (causes crashes)
+**Current standard:** Keep `SWIFT_DEFAULT_ACTOR_ISOLATION = nonisolated`, and add explicit `@MainActor` to the classes that need main-thread access. This is kept because `nonisolated` is the correct Swift 6 *default* isolation — **not** as a crash workaround. Opting the whole app into `MainActor`-by-default remains an unwanted, large semantic change for reasons unrelated to the (now-fixed) crash.
+
+> The `RunLoop.current.run(until: Date())` tearDown (see §2) addresses a **separate** UIKit double-free during asynchronous view teardown and is still required. It was not part of this verification.
 
 ### 2. UIKit Test Cleanup
 
@@ -973,7 +972,7 @@ func enterFullscreen() {
 |--------------|---------|----------|
 | Permanent bidirectional async/Combine mixing | Ownership races | One model per boundary; temporary one-way bridge OK |
 | Capturing self in a Task | Isolated-deinit crash | Capture the Sendable dependency, not self |
-| `@MainActor` in build settings | malloc crashes | Set `nonisolated` |
+| `MainActor`-by-default in build settings | (historically) deinit crash — fixed in Swift 6.3.3 | Keep `nonisolated` (the standard Swift 6 default) |
 | Missing tearDown RunLoop | Test crashes | Add `RunLoop.current.run` |
 | Mixed constraint states | Layout crashes | Deactivate before activate |
 

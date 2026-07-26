@@ -110,7 +110,7 @@ extension XCTestCase {
 
 ## UI Test Cleanup
 
-**Critical:** UIKit views deallocate asynchronously. Always include RunLoop processing:
+UIKit defers view and constraint deallocation to the main run loop. Draining it in `tearDown` lets that cleanup finish before the next test's `setUp` runs:
 
 ```swift
 @MainActor
@@ -122,7 +122,7 @@ final class MyUITests: XCTestCase {
 }
 ```
 
-**Why?** Without this, tests crash with malloc errors when view controllers are deallocated during the next test's setup.
+**Why keep it?** It guards a real UIKit behavior — deferred dealloc colliding with the next test's `setUp`. The malloc crash it originally prevented no longer reproduces on Xcode 26.6 / Swift 6.3.3: removing every teardown drain and running the UI suites in sequence (828 executions) produced zero crashes — that crash was the Swift 6 deinit-isolation bug in [Common Pitfalls #1](#1-swift-6-mainactor-deallocation-crash-historical--fixed-in-the-current-toolchain), which is now fixed. The drain is retained anyway: it costs nothing at runtime and the deferred-dealloc collision is a real, timing-dependent hazard, so it stays as cheap insurance rather than a load-bearing workaround.
 
 ---
 
@@ -424,14 +424,16 @@ private func makeItem(id: UUID, title: String) -> (model: Video, json: [String: 
 
 ## Common Pitfalls & Solutions
 
-### 1. Swift 6 @MainActor Deallocation Crash
+### 1. Swift 6 @MainActor Deallocation Crash (historical — fixed in the current toolchain)
 
-**Problem:** malloc crash during @MainActor class deallocation.
+**Problem (historical):** malloc crash during `@MainActor` class deallocation, from a Swift runtime deinit-isolation bug ([swiftlang/swift#87316](https://github.com/swiftlang/swift/issues/87316)).
 
-**Solution:**
-1. Set `SWIFT_DEFAULT_ACTOR_ISOLATION = nonisolated` in build settings
+**Status (verified 2026-07-26):** No longer reproduces on Xcode 26.6 / Swift 6.3.3 (~2,500 dealloc-heavy test executions under `MainActor`-by-default, zero crashes).
+
+**Current standard:**
+1. Keep `SWIFT_DEFAULT_ACTOR_ISOLATION = nonisolated` — the correct Swift 6 default, no longer a crash workaround
 2. Add explicit `@MainActor` where needed
-3. Add `RunLoop.current.run(until: Date())` in tearDown
+3. Keep `RunLoop.current.run(until: Date())` in tearDown — it fixes a **separate** UIKit teardown double-free (see *Malloc Error Prevention*), not the runtime bug above
 
 ### 2. Fire-and-Forget Analytics in Decorators
 
