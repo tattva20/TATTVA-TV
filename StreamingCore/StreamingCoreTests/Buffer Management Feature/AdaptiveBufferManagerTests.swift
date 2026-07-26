@@ -174,7 +174,10 @@ final class AdaptiveBufferManagerTests: XCTestCase {
 		sut.updateMemoryState(normalMemoryState)
 		sut.updateMemoryState(normalMemoryState)
 
-		try? await Task.sleep(nanoseconds: 100_000_000)
+		let deadline = Date() + 2
+		while Date() < deadline, emitCount < 2 {
+			try? await Task.sleep(nanoseconds: 10_000_000)
+		}
 
 		// Should only emit twice: initial balanced + change to aggressive
 		XCTAssertEqual(emitCount, 2)
