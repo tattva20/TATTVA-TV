@@ -10,9 +10,11 @@ Tattva uses Apple's **Combine framework** for **observation and state streams**.
 - Playback state and transition streams
 - Buffer, memory, and performance monitoring
 - Resource cleanup events
-- Main-thread dispatch and image-data caching helpers (`CombineHelpers.swift`)
+- Main-thread dispatch helper (`CombineHelpers.swift`)
 
-These streams live in the platform-agnostic cores (`StreamingCore` and `StreamingCorePlayback`) and are shared by both the iOS (`Tattva`) and tvOS (`TattvaTV`) apps. The AVPlayer-facing Combine plumbing — `StatefulVideoPlayer.statePublisher`, `AVPlayerStateAdapter`, `AVPlayerPerformanceObserver`, `AVPlayerBufferAdapter` — lives in `StreamingCorePlayback`.
+These streams live in the platform-agnostic cores (`StreamingCore` and `StreamingCorePlayback`) and are shared by both the iOS (`Tattva`) and tvOS (`TattvaTV`) apps.
+
+> **Why Combine here (and not Observation or AsyncStream)?** See [ADR 0001 — Combine for the Reactive Layer](adr/0001-combine-for-the-reactive-layer.md) for the decision, the alternatives weighed, and the triggers that would reopen it. The AVPlayer-facing Combine plumbing — `StatefulVideoPlayer.statePublisher`, `AVPlayerStateAdapter`, `AVPlayerPerformanceObserver`, `AVPlayerBufferAdapter` — lives in `StreamingCorePlayback`.
 
 ---
 
