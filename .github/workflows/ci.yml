@@ -42,7 +42,7 @@ jobs:
           -destination 'platform=iOS Simulator,name=iPhone 17,OS=26.5' \
           -resultBundlePath TestResults-iOS.xcresult \
           CODE_SIGNING_ALLOWED=NO \
-          | xcpretty --color || true
+          | xcpretty --color
 
     - name: Upload Test Results
       uses: actions/upload-artifact@v4
@@ -79,7 +79,7 @@ jobs:
           -enableThreadSanitizer YES \
           -resultBundlePath TestResults-macOS.xcresult \
           CODE_SIGNING_ALLOWED=NO \
-          | xcpretty --color || true
+          | xcpretty --color
 
     - name: Upload Test Results
       uses: actions/upload-artifact@v4
@@ -118,7 +118,7 @@ jobs:
           -destination 'platform=tvOS Simulator,name=Apple TV 4K (3rd generation),OS=latest' \
           -resultBundlePath TestResults-tvOS.xcresult \
           CODE_SIGNING_ALLOWED=NO \
-          | xcpretty --color || true
+          | xcpretty --color
 
     - name: Upload Test Results
       uses: actions/upload-artifact@v4
