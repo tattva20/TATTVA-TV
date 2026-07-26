@@ -5,13 +5,13 @@ import StreamingCoreAccessibility
 @testable import TattvaTV
 
 @MainActor
-final class TVFeedAnnouncerTests: XCTestCase {
+final class TVVideosAnnouncerTests: XCTestCase {
 
-	func test_loadFeed_announcesTheVideoCountForVoiceOver() async {
+	func test_loadVideos_announcesTheVideoCountForVoiceOver() async {
 		let announcer = AnnouncerSpy()
 		let sut = makeSUT(videos: [makeVideo(), makeVideo()], announcer: announcer)
 
-		sut.loadFeed()
+		sut.loadVideos()
 
 		await eventually { !announcer.announcements.isEmpty }
 		XCTAssertEqual(announcer.announcements, ["2 videos"])
@@ -19,8 +19,8 @@ final class TVFeedAnnouncerTests: XCTestCase {
 
 	// MARK: - Helpers
 
-	private func makeSUT(videos: [Video], announcer: Announcer) -> TVFeedLoaderPresentationAdapter {
-		let sut = TVFeedLoaderPresentationAdapter(
+	private func makeSUT(videos: [Video], announcer: Announcer) -> TVVideosLoaderPresentationAdapter {
+		let sut = TVVideosLoaderPresentationAdapter(
 			videoLoader: { Paginated(items: videos) },
 			imageLoader: { _ in Data() },
 			selection: { _ in })

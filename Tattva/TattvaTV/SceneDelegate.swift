@@ -56,7 +56,7 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 		PlaybackAnalyticsService(store: analyticsStore)
 
 	private lazy var navigationController = UINavigationController(
-		rootViewController: TVVideosUIComposer.feedComposedWith(
+		rootViewController: TVVideosUIComposer.videosComposedWith(
 			videoLoader: videoService.loadRemoteVideosWithLocalFallback,
 			imageLoader: videoService.loadLocalImageWithRemoteFallback,
 			selection: showPlayer))

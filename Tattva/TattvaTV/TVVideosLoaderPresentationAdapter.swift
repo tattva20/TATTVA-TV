@@ -3,12 +3,12 @@ import StreamingCore
 import StreamingCoreAccessibility
 
 @MainActor
-final class TVFeedLoaderPresentationAdapter {
+final class TVVideosLoaderPresentationAdapter {
 	private let videoLoader: () async throws -> Paginated<Video>
 	private let imageLoader: @Sendable (URL) async throws -> Data
 	private let selection: @MainActor (Video) -> Void
 
-	weak var feedViewController: TVVideoFeedViewController?
+	weak var videosViewController: TVVideosViewController?
 	var announcer: Announcer?
 
 	private var accumulatedVideos: [Video] = []
@@ -27,22 +27,22 @@ final class TVFeedLoaderPresentationAdapter {
 
 	static let loadErrorMessage = "Couldn't load videos. Please try again."
 
-	func loadFeed() {
+	func loadVideos() {
 		guard !isLoading else { return }
 		isLoading = true
-		feedViewController?.display(errorMessage: nil)
-		feedViewController?.display(isLoading: true)
+		videosViewController?.display(errorMessage: nil)
+		videosViewController?.display(isLoading: true)
 		Task.immediate { @MainActor in
 			defer { self.isLoading = false }
 			do {
 				let page = try await self.videoLoader()
 				self.accumulatedVideos = page.items
 				self.loadMore = page.loadMore
-				self.feedViewController?.display(isLoading: false)
+				self.videosViewController?.display(isLoading: false)
 				self.display()
 			} catch {
-				self.feedViewController?.display(isLoading: false)
-				self.feedViewController?.display(errorMessage: Self.loadErrorMessage)
+				self.videosViewController?.display(isLoading: false)
+				self.videosViewController?.display(errorMessage: Self.loadErrorMessage)
 				self.announcer?.announce(Self.loadErrorMessage)
 			}
 		}
@@ -71,7 +71,7 @@ final class TVFeedLoaderPresentationAdapter {
 				selection: { [selection] in selection(video) })
 			return TVCellController(id: video, cellController)
 		}
-		feedViewController?.display(controllers)
+		videosViewController?.display(controllers)
 		announcer?.announce("\(accumulatedVideos.count) videos")
 	}
 }

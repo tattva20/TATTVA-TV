@@ -5,7 +5,7 @@ import StreamingCoreAccessibility
 @testable import TattvaTV
 
 @MainActor
-final class TVVideoFeedErrorStateTests: XCTestCase {
+final class TVVideosErrorStateTests: XCTestCase {
 	override func tearDown() {
 		super.tearDown()
 		RunLoop.current.run(until: Date())
@@ -17,7 +17,7 @@ final class TVVideoFeedErrorStateTests: XCTestCase {
 		sut.simulateAppearance()
 
 		await eventually { sut.errorMessage != nil }
-		XCTAssertNotNil(sut.errorMessage, "Expected an error message when the feed fails to load")
+		XCTAssertNotNil(sut.errorMessage, "Expected an error message when the video list fails to load")
 		XCTAssertNotNil(sut.retryButton, "Expected a focusable retry affordance on failure")
 		XCTAssertEqual(sut.numberOfRenderedPosters(), 0)
 	}
@@ -37,7 +37,7 @@ final class TVVideoFeedErrorStateTests: XCTestCase {
 			.failure(anyError()),
 			.success(paginated([makeVideo(title: "Recovered")]))
 		])
-		let sut = TVVideosUIComposer.feedComposedWith(
+		let sut = TVVideosUIComposer.videosComposedWith(
 			videoLoader: { try loader.next() },
 			imageLoader: { _ in Data() },
 			selection: { _ in })
@@ -54,19 +54,19 @@ final class TVVideoFeedErrorStateTests: XCTestCase {
 
 	func test_loadFailure_announcesErrorForVoiceOver() async {
 		let announcer = AnnouncerSpy()
-		let feedViewController = TVVideoFeedViewController()
-		let adapter = TVFeedLoaderPresentationAdapter(
+		let videosViewController = TVVideosViewController()
+		let adapter = TVVideosLoaderPresentationAdapter(
 			videoLoader: { throw self.anyError() },
 			imageLoader: { _ in Data() },
 			selection: { _ in })
-		adapter.feedViewController = feedViewController
+		adapter.videosViewController = videosViewController
 		adapter.announcer = announcer
-		feedViewController.loadViewIfNeeded()
+		videosViewController.loadViewIfNeeded()
 
-		adapter.loadFeed()
+		adapter.loadVideos()
 
 		await eventually { !announcer.messages.isEmpty }
-		XCTAssertEqual(announcer.messages.last, feedViewController.errorMessage)
+		XCTAssertEqual(announcer.messages.last, videosViewController.errorMessage)
 	}
 
 	// MARK: - Helpers
@@ -74,8 +74,8 @@ final class TVVideoFeedErrorStateTests: XCTestCase {
 	private func makeSUT(
 		videoResult: Result<Paginated<Video>, Error>,
 		imageLoader: @escaping @Sendable (URL) async throws -> Data = { _ in Data() }
-	) -> TVVideoFeedViewController {
-		TVVideosUIComposer.feedComposedWith(
+	) -> TVVideosViewController {
+		TVVideosUIComposer.videosComposedWith(
 			videoLoader: { try videoResult.get() },
 			imageLoader: imageLoader,
 			selection: { _ in })
@@ -131,7 +131,7 @@ private final class AnnouncerSpy: Announcer {
 }
 
 @MainActor
-extension TVVideoFeedViewController {
+extension TVVideosViewController {
 	func simulateRetry() {
 		retryButton?.sendActions(for: .primaryActionTriggered)
 	}

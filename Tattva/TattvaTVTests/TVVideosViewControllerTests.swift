@@ -4,7 +4,7 @@ import StreamingCore
 @testable import TattvaTV
 
 @MainActor
-final class TVVideoFeedViewControllerTests: XCTestCase {
+final class TVVideosViewControllerTests: XCTestCase {
 	override func tearDown() {
 		super.tearDown()
 		RunLoop.current.run(until: Date())
@@ -38,8 +38,8 @@ final class TVVideoFeedViewControllerTests: XCTestCase {
 		selection: @escaping @MainActor (Video) -> Void = { _ in },
 		file: StaticString = #filePath,
 		line: UInt = #line
-	) -> TVVideoFeedViewController {
-		let sut = TVVideosUIComposer.feedComposedWith(videos: videos, selection: selection)
+	) -> TVVideosViewController {
+		let sut = TVVideosUIComposer.videosComposedWith(videos: videos, selection: selection)
 		return sut
 	}
 
@@ -56,7 +56,7 @@ final class TVVideoFeedViewControllerTests: XCTestCase {
 }
 
 @MainActor
-extension TVVideoFeedViewController {
+extension TVVideosViewController {
 	func simulateAppearance() {
 		loadViewIfNeeded()
 		collectionView.frame = CGRect(x: 0, y: 0, width: 1920, height: 1080)
