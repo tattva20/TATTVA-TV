@@ -1,5 +1,5 @@
 //
-//  VideoPlayerControlsViewTests.swift
+//  VideoPlayerControlsTests.swift
 //  StreamingCoreiOSTests
 //
 //  Copyright by Octavio Rojas. All rights reserved.
@@ -9,7 +9,7 @@ import XCTest
 @testable import StreamingCoreiOS
 
 @MainActor
-final class VideoPlayerControlsViewTests: XCTestCase {
+final class VideoPlayerControlsTests: XCTestCase {
 
 	// MARK: - UI Element Creation Tests
 
@@ -449,8 +449,8 @@ final class VideoPlayerControlsViewTests: XCTestCase {
 		XCTAssertEqual(sut.progressSlider.accessibilityValue, "0:30 of 2:00")
 	}
 
-	private func makeSUT(file: StaticString = #filePath, line: UInt = #line) -> VideoPlayerControlsView {
-		let sut = VideoPlayerControlsView()
+	private func makeSUT(file: StaticString = #filePath, line: UInt = #line) -> VideoPlayerControls {
+		let sut = VideoPlayerControls()
 		trackForMemoryLeaks(sut, file: file, line: line)
 		return sut
 	}
