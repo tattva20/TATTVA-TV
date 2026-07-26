@@ -153,13 +153,17 @@ flowchart TB
     iOSApp["Tattva<br/><i>iOS app · composition root</i>"]
     tvApp["TattvaTV<br/><i>tvOS app · composition root</i>"]
     iOS["StreamingCoreiOS<br/><i>UIKit UI</i>"]
+    A11y["StreamingCoreAccessibility<br/><i>UIKit · shared a11y toolkit</i>"]
     Playback["StreamingCorePlayback<br/><i>AVFoundation · reused playback stack</i>"]
     Core["StreamingCore<br/><i>domain · use cases · presenters · protocols</i><br/>🚫 No UIKit / AVKit"]
 
     iOSApp --> iOS
     iOSApp --> Playback
+    iOSApp --> A11y
     tvApp --> Playback
+    tvApp --> A11y
     iOS --> Core
+    A11y --> Core
     Playback --> Core
     iOSApp --> Core
     tvApp --> Core
@@ -169,7 +173,7 @@ flowchart TB
     classDef pb fill:#f3e8fd,stroke:#a142f4,color:#202124;
     classDef core fill:#fef7e0,stroke:#f9ab00,color:#202124;
     class iOSApp,tvApp app
-    class iOS ios
+    class iOS,A11y ios
     class Playback pb
     class Core core
 ```
@@ -180,12 +184,13 @@ flowchart TB
 Tattva.xcworkspace — dependencies point inward to StreamingCore
 
 apps · composition roots
-├── Tattva      iOS app    → Core · CoreiOS · CorePlayback   (custom UIKit player)
-└── TattvaTV    tvOS app   → Core · CorePlayback             (native AVPlayerViewController)
+├── Tattva      iOS app    → Core · CoreiOS · CorePlayback · CoreAccessibility   (custom UIKit player)
+└── TattvaTV    tvOS app   → Core · CorePlayback · CoreAccessibility             (native AVPlayerViewController)
 
 frameworks
-├── StreamingCoreiOS       UIKit          → Core   iOS feed / player / comments UI
-├── StreamingCorePlayback  AVFoundation   → Core   AVPlayerVideoPlayer · logging/analytics decorators ·
+├── StreamingCoreiOS          UIKit          → Core   iOS feed / player / comments UI
+├── StreamingCoreAccessibility UIKit         → Core   .accessible() · AnnouncingResourceView · UIKitAnnouncer (iOS + tvOS)
+├── StreamingCorePlayback     AVFoundation   → Core   AVPlayerVideoPlayer · logging/analytics decorators ·
 │                                                  StatefulVideoPlayer · PlaybackCoordinator · bandwidth/perf
 └── StreamingCore          Foundation · Combine · CoreData   domain · use cases · presenters · protocols
                                                              (🚫 no UIKit / AVKit)
@@ -356,14 +361,22 @@ xcodebuild test \
   -scheme Tattva \
   -destination 'platform=iOS Simulator,name=iPhone 17'
 
-# Run with ThreadSanitizer (CI mode)
+# CI_iOS — full functional suite, NO ThreadSanitizer (a TSan'd CI_iOS hangs the sim)
 xcodebuild clean build test \
   -workspace Tattva.xcworkspace \
   -scheme "CI_iOS" \
   CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO \
   -sdk iphonesimulator \
-  -destination "platform=iOS Simulator,name=iPhone 17" \
-  -enableThreadSanitizer YES
+  -destination "platform=iOS Simulator,name=iPhone 17,OS=26.5" \
+  ONLY_ACTIVE_ARCH=YES
+
+# CI_macOS — ThreadSanitizer runs here (StreamingCore tests, no simulator)
+xcodebuild clean build test \
+  -workspace Tattva.xcworkspace \
+  -scheme "CI_macOS" \
+  CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO \
+  -sdk macosx -destination "platform=macOS" \
+  -enableThreadSanitizer YES ONLY_ACTIVE_ARCH=YES
 ```
 
 ---

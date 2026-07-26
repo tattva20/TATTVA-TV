@@ -104,7 +104,17 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     // MARK: - Analytics & Logging
     private lazy var analyticsStore: AnalyticsStore = {
-        InMemoryAnalyticsStore()
+        // Playback analytics PERSIST via CoreData (capped retention, maxSessions: 50),
+        // wrapped in LoggingAnalyticsStore; InMemory is the fallback if the store fails.
+        let persistent: AnalyticsStore
+        do {
+            persistent = try CoreDataAnalyticsStore(
+                storeURL: NSPersistentContainer.defaultDirectoryURL()
+                    .appendingPathComponent("analytics-store.sqlite"))
+        } catch {
+            persistent = InMemoryAnalyticsStore()
+        }
+        return LoggingAnalyticsStore(decoratee: persistent, logger: structuredLogger)
     }()
 
     private lazy var analyticsLogger: PlaybackAnalyticsLogger = {

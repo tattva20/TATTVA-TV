@@ -10,7 +10,7 @@ The Memory Management feature monitors system memory, detects pressure levels, a
 flowchart TB
     PMM["PollingMemoryMonitor"] -->|statePublisher| MS["MemoryState<br/>pressureLevel(thresholds:)<br/>→ MemoryPressureLevel"]
     PMM --> RCC["ResourceCleanupCoordinator"]
-    RCC -->|cleaners| CL["VideoCacheCleaner<br/>ImageCacheCleaner"]
+    RCC -->|cleaners| CL["VideoCacheCleaner"]
 ```
 
 ---
@@ -411,45 +411,7 @@ public final class VideoCacheCleaner: ResourceCleaner, @unchecked Sendable {
 
 Video cache is `.high` priority — video files consume the most storage, so they are reserved for critical pressure. The cleaner injects a synchronous `deleteAction` closure rather than depending on a concrete cache.
 
-### ImageCacheCleaner
-
-**File:** `StreamingCore/StreamingCore/Resource Cleanup Feature/ImageCacheCleaner.swift`
-
-```swift
-public final class ImageCacheCleaner: ResourceCleaner, @unchecked Sendable {
-    public let resourceName = "Image Cache"
-    public let priority: CleanupPriority = .medium
-
-    private let clearAction: () throws -> Int
-    private let sizeEstimate: UInt64
-
-    public init(
-        clearAction: @escaping () throws -> Int,
-        estimateSize: UInt64 = 0
-    ) {
-        self.clearAction = clearAction
-        self.sizeEstimate = estimateSize
-    }
-
-    public func estimateCleanup() async -> UInt64 { sizeEstimate }
-
-    public func cleanup() async -> CleanupResult {
-        do {
-            let itemsRemoved = try clearAction()
-            return CleanupResult(
-                resourceName: resourceName,
-                bytesFreed: 0, // NSCache doesn't expose size
-                itemsRemoved: itemsRemoved,
-                success: true
-            )
-        } catch {
-            return .failure(resourceName: resourceName, error: error.localizedDescription)
-        }
-    }
-}
-```
-
-Image cache is `.medium` priority and injects a synchronous `clearAction` returning the number of items removed. `bytesFreed` stays `0` because `NSCache` does not expose its size.
+The registered cleaner set is currently `VideoCacheCleaner` alone (video files are the heaviest cache). There is no image-cache cleaner — image data lives in an `NSCache` that evicts itself under pressure.
 
 ---
 
@@ -478,20 +440,13 @@ lazy var memoryMonitor: PollingMemoryMonitor = {
     MemoryMonitorFactory.makeSystemMemoryMonitor()
 }()
 
-lazy var resourceCleanupCoordinator: ResourceCleanupCoordinator = {
-    let videoCleaner = VideoCacheCleaner(
-        deleteAction: { [store] in try store.deleteCachedVideos() }
-    )
-    let imageCleaner = ImageCacheCleaner(
-        clearAction: { return 0 }
-    )
-    return ResourceCleanupCoordinator(
-        cleaners: [videoCleaner, imageCleaner],
-        memoryMonitor: memoryMonitor
-    )
-}()
+// Both SceneDelegates build the coordinator through the shared helper,
+// so the cache-eviction wiring can't drift between iOS and tvOS.
+lazy var resourceCleanupCoordinator: ResourceCleanupCoordinator =
+    ResourceManagementComposer.makeCoordinator(
+        deleteCachedVideos: { [store] in try store.deleteCachedVideos() },
+        memoryMonitor: memoryMonitor)
 
-// Cleaners are passed at init (sorted highest-priority-first internally).
 // enableAutoCleanup() starts the monitor for you — no separate startMonitoring() call.
 resourceCleanupCoordinator.enableAutoCleanup()
 ```

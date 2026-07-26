@@ -12,14 +12,15 @@ Tattva follows **Uncle Bob's Clean Architecture** with strict layer boundaries a
 Tattva.xcworkspace — dependencies point inward; every arrow ends at StreamingCore
 
 apps · composition roots (platform-specific wiring)
-├── Tattva      iOS app    → StreamingCore · StreamingCoreiOS · StreamingCorePlayback
+├── Tattva      iOS app    → StreamingCore · StreamingCoreiOS · StreamingCorePlayback · StreamingCoreAccessibility
 │                                        DI & wiring · AVPlayer + custom PlayerView · lifecycle
-└── TattvaTV     tvOS app  → StreamingCore · StreamingCorePlayback   (not StreamingCoreiOS)
+└── TattvaTV     tvOS app  → StreamingCore · StreamingCorePlayback · StreamingCoreAccessibility   (not StreamingCoreiOS)
                                          DI & wiring · AVPlayerViewController (native transport)
 
 frameworks
-├── StreamingCoreiOS       UIKit          → StreamingCore    iOS feed / player / comments UI
-├── StreamingCorePlayback  AVFoundation   → StreamingCore    AVPlayerVideoPlayer · logging/analytics
+├── StreamingCoreiOS          UIKit          → StreamingCore    iOS feed / player / comments UI
+├── StreamingCoreAccessibility UIKit         → StreamingCore    .accessible() · AnnouncingResourceView · UIKitAnnouncer (iOS + tvOS)
+├── StreamingCorePlayback     AVFoundation   → StreamingCore    AVPlayerVideoPlayer · logging/analytics
 │                                                            decorators · StatefulVideoPlayer ·
 │                                                            PlaybackCoordinator · bandwidth/perf
 └── StreamingCore          Foundation · Combine · CoreData   the stable core — NO UIKit / AVKit
