@@ -20,11 +20,7 @@ public final class VideoPlayerViewController: UIViewController {
 		return view
 	}()
 
-	public private(set) lazy var controlsView: VideoPlayerControlsView = {
-		let view = VideoPlayerControlsView()
-		view.translatesAutoresizingMaskIntoConstraints = false
-		return view
-	}()
+	public private(set) lazy var controlsView = VideoPlayerControls()
 
 	// MARK: - State
 

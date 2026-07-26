@@ -122,9 +122,9 @@ final class PlaybackControlsControllerTests: XCTestCase {
 	private func makeSUT(
 		file: StaticString = #filePath,
 		line: UInt = #line
-	) -> (controlsView: VideoPlayerControlsView, player: VideoPlayerSpy, delegate: DelegateSpy) {
+	) -> (controlsView: VideoPlayerControls, player: VideoPlayerSpy, delegate: DelegateSpy) {
 		let player = VideoPlayerSpy()
-		let controlsView = VideoPlayerControlsView()
+		let controlsView = VideoPlayerControls()
 		let delegate = DelegateSpy()
 		let controller = PlaybackControlsController(player: player, controlsView: controlsView, delegate: delegate)
 		sut = controller

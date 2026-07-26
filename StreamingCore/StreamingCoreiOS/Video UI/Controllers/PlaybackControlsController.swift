@@ -18,12 +18,12 @@ public protocol PlaybackControlsControllerDelegate: AnyObject {
 @MainActor
 public final class PlaybackControlsController {
 	private let player: VideoPlayer
-	private let controlsView: VideoPlayerControlsView
+	private let controlsView: VideoPlayerControls
 	private weak var delegate: PlaybackControlsControllerDelegate?
 
 	private static let playbackSpeeds: [Float] = [1.0, 1.25, 1.5, 2.0, 0.5]
 
-	public init(player: VideoPlayer, controlsView: VideoPlayerControlsView, delegate: PlaybackControlsControllerDelegate) {
+	public init(player: VideoPlayer, controlsView: VideoPlayerControls, delegate: PlaybackControlsControllerDelegate) {
 		self.player = player
 		self.controlsView = controlsView
 		self.delegate = delegate

@@ -28,7 +28,7 @@ public final class PlayerLayoutController {
 
 	public init() {}
 
-	public func setupConstraints(view: UIView, playerView: UIView, controlsView: VideoPlayerControlsView) {
+	public func setupConstraints(view: UIView, playerView: UIView, controlsView: VideoPlayerControls) {
 		let playerViewAspectRatio = playerView.heightAnchor.constraint(equalTo: playerView.widthAnchor, multiplier: 9.0/16.0)
 
 		portraitConstraints = [
