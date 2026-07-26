@@ -51,17 +51,17 @@ final class ProductionIntegrationTests: XCTestCase {
 		let controller = VideoPlayerUIComposer.videoPlayerComposedWith(video: video)
 
 		// Should have stateful player wrapper
-		XCTAssertNotNil(controller.statefulPlayer, "Expected controller to have stateful player")
+		XCTAssertNotNil(controller.playbackCollaborators?.statefulPlayer, "Expected controller to have stateful player")
 
 		// Should have state publisher
-		XCTAssertNotNil(controller.statefulPlayer?.statePublisher, "Expected stateful player to have state publisher")
+		XCTAssertNotNil(controller.playbackCollaborators?.statefulPlayer.statePublisher, "Expected stateful player to have state publisher")
 	}
 
 	func test_videoPlayerComposition_startsInValidInitialState() {
 		let video = makeVideo()
 		let controller = VideoPlayerUIComposer.videoPlayerComposedWith(video: video)
 
-		let state = controller.statefulPlayer?.currentPlaybackState
+		let state = controller.playbackCollaborators?.statefulPlayer.currentPlaybackState
 		let isValidState: Bool
 		switch state {
 		case .idle, .loading, .ready:

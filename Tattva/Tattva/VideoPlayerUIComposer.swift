@@ -10,82 +10,6 @@ import StreamingCore
 import StreamingCoreiOS
 import StreamingCorePlayback
 
-// MARK: - Associated Object Extension for Performance Adapter
-
-private nonisolated(unsafe) var performanceAdapterKey: UInt8 = 0
-
-public extension VideoPlayerViewController {
-	var performanceAdapter: VideoPlayerPerformanceAdapter? {
-		get {
-			objc_getAssociatedObject(self, &performanceAdapterKey) as? VideoPlayerPerformanceAdapter
-		}
-		set {
-			objc_setAssociatedObject(
-				self,
-				&performanceAdapterKey,
-				newValue,
-				.OBJC_ASSOCIATION_RETAIN_NONATOMIC
-			)
-		}
-	}
-}
-
-// MARK: - Associated Object Extension for Stateful Player
-
-private nonisolated(unsafe) var statefulPlayerKey: UInt8 = 0
-
-public extension VideoPlayerViewController {
-	var statefulPlayer: StatefulVideoPlayer? {
-		get {
-			objc_getAssociatedObject(self, &statefulPlayerKey) as? StatefulVideoPlayer
-		}
-		set {
-			objc_setAssociatedObject(
-				self,
-				&statefulPlayerKey,
-				newValue,
-				.OBJC_ASSOCIATION_RETAIN_NONATOMIC
-			)
-		}
-	}
-}
-
-private nonisolated(unsafe) var playbackCoordinatorKey: UInt8 = 0
-
-extension VideoPlayerViewController {
-	var playbackCoordinator: PlaybackCoordinator? {
-		get {
-			objc_getAssociatedObject(self, &playbackCoordinatorKey) as? PlaybackCoordinator
-		}
-		set {
-			objc_setAssociatedObject(
-				self,
-				&playbackCoordinatorKey,
-				newValue,
-				.OBJC_ASSOCIATION_RETAIN_NONATOMIC
-			)
-		}
-	}
-}
-
-private nonisolated(unsafe) var bufferAdapterKey: UInt8 = 0
-
-extension VideoPlayerViewController {
-	var bufferAdapter: AVPlayerBufferAdapterConcrete? {
-		get {
-			objc_getAssociatedObject(self, &bufferAdapterKey) as? AVPlayerBufferAdapterConcrete
-		}
-		set {
-			objc_setAssociatedObject(
-				self,
-				&bufferAdapterKey,
-				newValue,
-				.OBJC_ASSOCIATION_RETAIN_NONATOMIC
-			)
-		}
-	}
-}
-
 final class NetworkBitrateBinding {
 	private let monitor: NetworkQualityMonitor
 	private let cancellable: AnyCancellable
@@ -98,42 +22,6 @@ final class NetworkBitrateBinding {
 	deinit {
 		let monitor = self.monitor
 		Task { await monitor.stopMonitoring() }
-	}
-}
-
-private nonisolated(unsafe) var networkBitrateBindingKey: UInt8 = 0
-
-extension VideoPlayerViewController {
-	var networkBitrateBinding: NetworkBitrateBinding? {
-		get {
-			objc_getAssociatedObject(self, &networkBitrateBindingKey) as? NetworkBitrateBinding
-		}
-		set {
-			objc_setAssociatedObject(
-				self,
-				&networkBitrateBindingKey,
-				newValue,
-				.OBJC_ASSOCIATION_RETAIN_NONATOMIC
-			)
-		}
-	}
-}
-
-private nonisolated(unsafe) var memoryPerformanceCancellableKey: UInt8 = 0
-
-extension VideoPlayerViewController {
-	var memoryPerformanceCancellable: AnyCancellable? {
-		get {
-			objc_getAssociatedObject(self, &memoryPerformanceCancellableKey) as? AnyCancellable
-		}
-		set {
-			objc_setAssociatedObject(
-				self,
-				&memoryPerformanceCancellableKey,
-				newValue,
-				.OBJC_ASSOCIATION_RETAIN_NONATOMIC
-			)
-		}
 	}
 }
 
@@ -169,7 +57,6 @@ public enum VideoPlayerUIComposer {
 		let statefulPlayer = StatefulVideoPlayer(decoratee: videoPlayer, stateMachine: stateMachine)
 
 		let controller = VideoPlayerViewController(viewModel: viewModel, player: statefulPlayer)
-		controller.statefulPlayer = statefulPlayer
 
 		// Create and wire performance monitoring
 		let performanceService = PlaybackPerformanceService()
@@ -179,17 +66,18 @@ public enum VideoPlayerUIComposer {
 			bandwidthEstimator: bandwidthEstimator
 		)
 		performanceAdapter.startMonitoring(sessionID: UUID())
-		controller.performanceAdapter = performanceAdapter
 
+		var performanceAlertLogging: PerformanceAlertLoggingBinding?
 		if let structuredLogger {
-			controller.performanceAlertLogging = PerformanceAlertLoggingBinding(
+			performanceAlertLogging = PerformanceAlertLoggingBinding(
 				alerts: performanceService.alertPublisher,
 				logger: structuredLogger
 			)
 		}
 
+		var memoryPerformanceCancellable: AnyCancellable?
 		if let memoryStatePublisher {
-			controller.memoryPerformanceCancellable = memoryStatePublisher
+			memoryPerformanceCancellable = memoryStatePublisher
 				.receive(on: RunLoop.main)
 				.sink { [weak performanceAdapter] state in
 					performanceAdapter?.updateMemory(
@@ -231,6 +119,11 @@ public enum VideoPlayerUIComposer {
 		}
 
 		controller.loadViewIfNeeded()
+
+		var playbackCoordinator: PlaybackCoordinator?
+		var bufferAdapter: AVPlayerBufferAdapterConcrete?
+		var networkBitrateBinding: NetworkBitrateBinding?
+
 		if let avPlayer = basePlayer as? AVPlayerVideoPlayer {
 			avPlayer.attach(to: controller.playerView)
 
@@ -241,14 +134,14 @@ public enum VideoPlayerUIComposer {
 				onTimeUpdate: { [weak controller] _ in controller?.updateTimeDisplay() }
 			)
 			coordinator.start()
-			controller.playbackCoordinator = coordinator
+			playbackCoordinator = coordinator
 
 			let retryController = PlaybackRetryController(reload: { [weak avPlayer] in avPlayer?.reload() })
 			coordinator.onPlaybackFailed = { retryController.playbackDidFail() }
 			coordinator.onPlaybackRecovered = { retryController.playbackDidRecover() }
 
 			if let bufferManager = bufferManager {
-				controller.bufferAdapter = AVPlayerBufferAdapter(
+				bufferAdapter = AVPlayerBufferAdapter(
 					player: avPlayer.player,
 					bufferManager: bufferManager
 				)
@@ -264,7 +157,7 @@ public enum VideoPlayerUIComposer {
 					performanceAdapter?.updateNetworkQuality(quality)
 				}
 			Task { await networkMonitor.startMonitoring() }
-			controller.networkBitrateBinding = NetworkBitrateBinding(
+			networkBitrateBinding = NetworkBitrateBinding(
 				monitor: networkMonitor,
 				cancellable: bitrateCancellable
 			)
@@ -287,6 +180,16 @@ public enum VideoPlayerUIComposer {
 		controller.onPipToggle = { [weak controller] in
 			controller?.pipController?.togglePictureInPicture()
 		}
+
+		controller.playbackCollaborators = PlaybackCollaborators(
+			statefulPlayer: statefulPlayer,
+			performanceAdapter: performanceAdapter,
+			playbackCoordinator: playbackCoordinator,
+			bufferAdapter: bufferAdapter,
+			networkBitrateBinding: networkBitrateBinding,
+			performanceAlertLogging: performanceAlertLogging,
+			memoryPerformanceCancellable: memoryPerformanceCancellable
+		)
 
 		return controller
 	}
