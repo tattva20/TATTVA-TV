@@ -37,12 +37,12 @@ final class PlayerLayoutControllerTests: XCTestCase {
 	private func makeSUT(
 		file: StaticString = #filePath,
 		line: UInt = #line
-	) -> (sut: PlayerLayoutController, host: UIView, playerView: UIView, controlsView: VideoPlayerControlsView) {
+	) -> (sut: PlayerLayoutController, host: UIView, playerView: UIView, controlsView: VideoPlayerControls) {
 		let sut = PlayerLayoutController()
 		let host = UIView(frame: CGRect(x: 0, y: 0, width: 1080, height: 1920))
 		let playerView = UIView()
 		playerView.translatesAutoresizingMaskIntoConstraints = false
-		let controlsView = VideoPlayerControlsView()
+		let controlsView = VideoPlayerControls()
 
 		host.addSubview(playerView)
 		host.addSubview(controlsView.playButton)

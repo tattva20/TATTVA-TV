@@ -1,5 +1,5 @@
 //
-//  VideoPlayerControlsView.swift
+//  VideoPlayerControls.swift
 //  StreamingCoreiOS
 //
 //  Copyright by Octavio Rojas. All rights reserved.
@@ -9,7 +9,8 @@ import UIKit
 import StreamingCore
 import StreamingCoreAccessibility
 
-public final class VideoPlayerControlsView: UIView {
+@MainActor
+public final class VideoPlayerControls: NSObject {
 
 	// MARK: - Orientation
 
@@ -152,7 +153,6 @@ public final class VideoPlayerControlsView: UIView {
 	public var onSpeedTapped: (() -> Void)?
 	public var onFullscreenTapped: (() -> Void)?
 	public var onPipTapped: (() -> Void)?
-	public var onTap: (() -> Void)?
 
 	// MARK: - State
 
@@ -160,39 +160,12 @@ public final class VideoPlayerControlsView: UIView {
 
 	// MARK: - Initialization
 
-	public override init(frame: CGRect) {
-		super.init(frame: frame)
-		setupViews()
-	}
-
-	public required init?(coder: NSCoder) {
-		super.init(coder: coder)
-		setupViews()
+	public override init() {
+		super.init()
+		configureAccessibility()
 	}
 
 	// MARK: - Setup
-
-	private func setupViews() {
-		translatesAutoresizingMaskIntoConstraints = false
-
-		addSubview(playButton)
-		addSubview(seekForwardButton)
-		addSubview(seekBackwardButton)
-		addSubview(progressSlider)
-		addSubview(currentTimeLabel)
-		addSubview(durationLabel)
-		addSubview(playbackSpeedButton)
-		addSubview(pipButton)
-		addSubview(fullscreenButton)
-		addSubview(landscapeTitleLabel)
-
-		addSubview(bottomControlsContainer)
-		bottomControlsContainer.addSubview(muteButton)
-		bottomControlsContainer.addSubview(volumeSlider)
-
-		setupTapGesture()
-		configureAccessibility()
-	}
 
 	private func configureAccessibility() {
 		playButton.accessible(label: "Play", role: .button)
@@ -204,12 +177,6 @@ public final class VideoPlayerControlsView: UIView {
 		pipButton.accessible(label: "Picture in Picture", role: .button)
 		progressSlider.accessible(label: "Playback position", role: .adjustable)
 		volumeSlider.accessible(label: "Volume", role: .adjustable)
-	}
-
-	private func setupTapGesture() {
-		let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTap))
-		addGestureRecognizer(tapGesture)
-		isUserInteractionEnabled = true
 	}
 
 	// MARK: - State Updates
@@ -363,9 +330,5 @@ public final class VideoPlayerControlsView: UIView {
 
 	@objc private func pipButtonTapped() {
 		onPipTapped?()
-	}
-
-	@objc private func handleTap() {
-		onTap?()
 	}
 }
