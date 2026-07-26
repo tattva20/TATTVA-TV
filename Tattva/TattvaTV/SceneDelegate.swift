@@ -30,6 +30,11 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 	private lazy var bufferManager: AdaptiveBufferManager = AdaptiveBufferManager()
 	private var bufferManagerBinding: AnyCancellable?
 
+	private lazy var resourceCleanupCoordinator: ResourceCleanupCoordinator =
+		ResourceManagementComposer.makeCoordinator(
+			deleteCachedVideos: { [store] in try store.deleteCachedVideos() },
+			memoryMonitor: memoryMonitor)
+
 	private lazy var structuredLogger: any StreamingCore.Logger =
 		LoggingConfiguration.makeLogger(subsystem: "com.tattva.TattvaTV")
 
@@ -66,15 +71,18 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 		window.rootViewController = navigationController
 		self.window = window
 		window.makeKeyAndVisible()
-		startBufferManagement()
+		startResourceManagement()
 	}
 
-	private func startBufferManagement() {
-		memoryMonitor.startMonitoring()
-		bufferManagerBinding = memoryMonitor.statePublisher
-			.sink { [bufferManager] state in
-				bufferManager.updateMemoryState(state)
-			}
+	private func startResourceManagement() {
+		resourceCleanupCoordinator.enableAutoCleanup()
+		bufferManagerBinding = ResourceManagementComposer.bindBufferManagerToMemory(
+			memoryMonitor: memoryMonitor,
+			bufferManager: bufferManager)
+	}
+
+	func sceneWillResignActive(_ scene: UIScene) {
+		videoService.validateCache()
 	}
 
 	private func showPlayer(for video: Video) {
@@ -84,7 +92,8 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 			infoViewController: info,
 			analyticsLogger: analyticsLogger,
 			structuredLogger: structuredLogger,
-			bufferManager: bufferManager)
+			bufferManager: bufferManager,
+			memoryStatePublisher: memoryMonitor.statePublisher)
 		navigationController.pushViewController(playerViewController, animated: true)
 	}
 }
