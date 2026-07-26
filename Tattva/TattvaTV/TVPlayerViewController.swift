@@ -1,4 +1,5 @@
 import AVKit
+import Combine
 import UIKit
 import StreamingCore
 import StreamingCorePlayback
@@ -10,6 +11,7 @@ public final class TVPlayerViewController: AVPlayerViewController {
 	private let analyticsLogger: PlaybackAnalyticsLogger?
 	private let structuredLogger: (any StreamingCore.Logger)?
 	private let bufferManager: (any BufferManager)?
+	private let memoryStatePublisher: AnyPublisher<MemoryState, Never>?
 	private var playbackBundle: TVPlayerComposer.Bundle?
 
 	public init(
@@ -17,13 +19,15 @@ public final class TVPlayerViewController: AVPlayerViewController {
 		infoViewController: UIViewController? = nil,
 		analyticsLogger: PlaybackAnalyticsLogger? = nil,
 		structuredLogger: (any StreamingCore.Logger)? = nil,
-		bufferManager: (any BufferManager)? = nil
+		bufferManager: (any BufferManager)? = nil,
+		memoryStatePublisher: AnyPublisher<MemoryState, Never>? = nil
 	) {
 		self.video = video
 		self.infoViewController = infoViewController
 		self.analyticsLogger = analyticsLogger
 		self.structuredLogger = structuredLogger
 		self.bufferManager = bufferManager
+		self.memoryStatePublisher = memoryStatePublisher
 		super.init(nibName: nil, bundle: nil)
 	}
 
@@ -38,7 +42,8 @@ public final class TVPlayerViewController: AVPlayerViewController {
 			video: video,
 			analyticsLogger: analyticsLogger,
 			structuredLogger: structuredLogger,
-			bufferManager: bufferManager
+			bufferManager: bufferManager,
+			memoryStatePublisher: memoryStatePublisher
 		)
 		player = bundle.player
 		playbackBundle = bundle

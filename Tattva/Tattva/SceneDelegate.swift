@@ -27,17 +27,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 		MemoryMonitorFactory.makeSystemMemoryMonitor()
 	}()
 
-	lazy var resourceCleanupCoordinator: ResourceCleanupCoordinator = {
-		let videoCleaner = VideoCacheCleaner(
-			deleteAction: { [store] in
-				try store.deleteCachedVideos()
-			}
-		)
-		return ResourceCleanupCoordinator(
-			cleaners: [videoCleaner],
-			memoryMonitor: memoryMonitor
-		)
-	}()
+	lazy var resourceCleanupCoordinator: ResourceCleanupCoordinator =
+		ResourceManagementComposer.makeCoordinator(
+			deleteCachedVideos: { [store] in try store.deleteCachedVideos() },
+			memoryMonitor: memoryMonitor)
 
 	lazy var bufferManager: AdaptiveBufferManager = {
 		AdaptiveBufferManager()
@@ -126,10 +119,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 	}
 
 	private func bindBufferManagerToMemory() {
-		bufferManagerBinding = memoryMonitor.statePublisher
-			.sink { [bufferManager] state in
-				bufferManager.updateMemoryState(state)
-			}
+		bufferManagerBinding = ResourceManagementComposer.bindBufferManagerToMemory(
+			memoryMonitor: memoryMonitor,
+			bufferManager: bufferManager)
 	}
 
 	private func enableAutoCleanup() {
