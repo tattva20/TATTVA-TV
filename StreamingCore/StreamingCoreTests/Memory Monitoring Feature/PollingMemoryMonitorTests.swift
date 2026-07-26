@@ -170,12 +170,15 @@ final class PollingMemoryMonitorTests: XCTestCase {
 			.store(in: &cancellables)
 
 		sut.startMonitoring()
-		try? await Task.sleep(nanoseconds: 200_000_000) // 200ms
+		let deadline = Date() + 2
+		while Date() < deadline, counter.value < 3 {
+			try? await Task.sleep(nanoseconds: 10_000_000)
+		}
 
 		sut.stopMonitoring()
 
 		// Memory reader called multiple times, but publisher should emit only once (due to removeDuplicates)
-		XCTAssertGreaterThan(counter.value, 2)
+		XCTAssertGreaterThanOrEqual(counter.value, 3)
 		XCTAssertEqual(receivedCount, 1)
 	}
 
