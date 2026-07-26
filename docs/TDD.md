@@ -110,7 +110,7 @@ extension XCTestCase {
 
 ## UI Test Cleanup
 
-**Critical:** UIKit views deallocate asynchronously. Always include RunLoop processing:
+UIKit defers view and constraint deallocation to the main run loop. Draining it in `tearDown` lets that cleanup finish before the next test's `setUp` runs:
 
 ```swift
 @MainActor
@@ -122,7 +122,7 @@ final class MyUITests: XCTestCase {
 }
 ```
 
-**Why?** Without this, tests crash with malloc errors when view controllers are deallocated during the next test's setup.
+**Why keep it?** It guards a real UIKit behavior — deferred dealloc colliding with the next test's `setUp`. The malloc crash it originally prevented no longer reproduces on Xcode 26.6 / Swift 6.3.3: removing every teardown drain and running the UI suites in sequence (828 executions) produced zero crashes — that crash was the Swift 6 deinit-isolation bug in [Common Pitfalls #1](#1-swift-6-mainactor-deallocation-crash-historical--fixed-in-the-current-toolchain), which is now fixed. The drain is retained anyway: it costs nothing at runtime and the deferred-dealloc collision is a real, timing-dependent hazard, so it stays as cheap insurance rather than a load-bearing workaround.
 
 ---
 
