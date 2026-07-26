@@ -2,7 +2,7 @@
 
 The Buffer Management types model adaptive buffering based on network conditions and memory pressure.
 
-> **Runtime integration status.** For HLS playback, AVFoundation manages buffering natively and tuning it manually can conflict with that logic. The `AdaptiveBufferManager` / `BufferConfiguration` types here are **implemented and unit-tested** but are **not** wired to drive the live player; they remain available for a custom-buffering or non-HLS scenario. `AVPlayerItem.preferredForwardBufferDuration` can be set through `AVPlayerBufferAdapter` when a fixed buffer is genuinely needed.
+> **Runtime integration status.** `AdaptiveBufferManager` is **wired on both platforms.** Each composition root constructs it and feeds it memory pressure (`ResourceManagementComposer.bindBufferManagerToMemory`), and the composer's network sink feeds it `updateNetworkQuality`; when a buffer manager is supplied, an `AVPlayerBufferAdapter` bridges the resulting `BufferConfiguration` to the live `AVPlayerItem`. The honest caveat: for HLS, AVFoundation also manages buffering natively, so this manual tuning is a complementary hint rather than the sole control.
 
 ---
 

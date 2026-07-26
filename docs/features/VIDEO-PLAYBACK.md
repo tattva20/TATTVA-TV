@@ -126,13 +126,14 @@ stateDiagram-v2
     [*] --> idle
     idle --> loading: load
     loading --> failed: fail
-    loading --> ready: ready
-    failed --> ready: retry
-    failed --> idle: load(url)
+    loading --> ready: didBecomeReady
+    failed --> idle: retry (recoverable)
+    failed --> loading: load(url)
     ready --> playing: play
     ready --> idle: stop
     playing --> failed: didFail
-    playing --> playing: didFinishBuffering
+    playing --> buffering: didStartBuffering
+    buffering --> playing: didFinishBuffering
     playing --> paused_ended: pause / didReachEnd
     paused_ended: paused /ended
 ```
@@ -217,33 +218,38 @@ public final class VideoPlayerControls: NSObject {
 
 **File:** `StreamingCoreiOS/Video UI/Controllers/ControlsVisibilityController.swift`
 
+The controller owns no `Timer`: timing and the "controls shown/hidden" side effects are delegated, so it stays a pure, testable state holder (the delegate is the `VideoPlayerViewController`).
+
 ```swift
-@MainActor
+public protocol ControlsVisibilityDelegate: AnyObject {
+    func controlsDidShow()
+    func controlsDidHide()
+    func scheduleTimer(withDelay delay: TimeInterval, callback: @escaping @MainActor () -> Void)
+    func cancelTimer()
+}
+
 public final class ControlsVisibilityController {
+    public private(set) var areControlsVisible: Bool = true
+
     private let hideDelay: TimeInterval
-    private var hideTimer: Timer?
+    private weak var delegate: ControlsVisibilityDelegate?
 
-    public var onVisibilityChange: ((Bool) -> Void)?
+    public init(hideDelay: TimeInterval, delegate: ControlsVisibilityDelegate,
+                isVoiceOverRunning: @escaping () -> Bool = { false }) { ... }
 
-    public func showControls() {
-        onVisibilityChange?(true)
+    public func show() {
+        areControlsVisible = true
+        delegate?.controlsDidShow()
         scheduleHide()
     }
 
-    public func hideControls() {
-        hideTimer?.invalidate()
-        onVisibilityChange?(false)
+    public func hide() {
+        areControlsVisible = false
+        delegate?.cancelTimer()
+        delegate?.controlsDidHide()
     }
 
-    public func toggleControls() {
-        isVisible ? hideControls() : showControls()
-    }
-
-    private func scheduleHide() {
-        hideTimer = Timer.scheduledTimer(withTimeInterval: hideDelay, repeats: false) { _ in
-            self.hideControls()
-        }
-    }
+    public func toggle() { areControlsVisible ? hide() : show() }
 }
 ```
 
