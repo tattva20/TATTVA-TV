@@ -437,18 +437,9 @@ private func makeItem(id: UUID, title: String) -> (model: Video, json: [String: 
 
 ### 2. Fire-and-Forget Analytics in Decorators
 
-**Problem:** A `@MainActor` decorator that captured `self` inside a `Task` crashed on deallocation (deinit-isolation runtime bug).
+**Problem (historical):** A `@MainActor` decorator that captured `self` inside a per-call `Task` could crash on deallocation via the deinit-isolation runtime bug (#1) — fixed on Swift 6.3.3. The ownership principle stands regardless.
 
-**Solution:** Don't capture `self`. Hoist the `Sendable` dependency into a local and let a structured `Task` capture only that — no retain, no isolated-deinit hazard, and the task keeps its priority and context (unlike `Task.detached`):
-
-```swift
-func play() {
-    decoratee.play()
-    let position = currentTime
-    let logger = analyticsLogger
-    Task { await logger.log(.play, position: position) }
-}
-```
+**Principle:** Async work from a decorator must capture only `Sendable` dependencies, never `self`. `AnalyticsVideoPlayerDecorator` uses a single long-lived `AsyncStream` queue drained by one processing task created at init (capturing only the logger + stream), with `deinit { continuation.finish(); processingTask.cancel() }` — no per-call task, no `self` capture.
 
 ### 3. Testing Async Publishers
 

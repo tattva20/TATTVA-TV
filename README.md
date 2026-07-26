@@ -933,45 +933,62 @@ final class MyUITests: XCTestCase {
 
 ### 4. Fire-and-Forget Analytics in Decorators
 
-**Problem:** A `@MainActor` decorator that captured `self` inside a `Task` crashed on deallocation (the deinit-isolation runtime bug above).
+**Problem (historical):** A `@MainActor` decorator that captured `self` inside a per-call `Task` could crash on deallocation via the deinit-isolation runtime bug (#1 above) — fixed on Swift 6.3.3. The ownership principle below stands on its own regardless.
 
-**Solution:** Don't capture `self`. Hoist the `Sendable` dependency into a local and let a structured `Task` capture only that — no retain, no isolated-deinit hazard, and the task keeps its priority and context (unlike `Task.detached`, which drops them):
+**Principle:** Async work spawned from a decorator must not retain `self` — capture only `Sendable` dependencies. `AnalyticsVideoPlayerDecorator` now does this with a single long-lived event queue rather than a `Task` per call: one processing task, created at init, captures only the logger and the stream and drains events in order.
 ```swift
+init(decoratee: VideoPlayer, analyticsLogger: PlaybackAnalyticsLogger) {
+    let (stream, continuation) = AsyncStream<LoggedEvent>.makeStream()
+    self.continuation = continuation
+    self.processingTask = Task {
+        for await event in stream {
+            await analyticsLogger.log(event.type, position: event.position)
+        }
+    }
+}
+
 func play() {
     decoratee.play()
-    let position = currentTime
-    let logger = analyticsLogger
-    Task { await logger.log(.play, position: position) }
+    enqueue(.play, position: currentTime)   // continuation.yield(...)
+}
+
+deinit {
+    continuation.finish()
+    processingTask.cancel()
 }
 ```
 
 ### 5. Constraint Conflicts in Orientation Changes
 
-**Problem:** malloc crash when constraints conflict during fullscreen.
+**Problem:** Activating a new constraint set without deactivating the old one produces unsatisfiable-constraint conflicts — broken layout and console errors. (Durable UIKit behavior, not a Swift-runtime issue.)
 
-**Solution:** Store constraints in arrays, deactivate all before activating new:
+**Solution:** Store each orientation's constraints in arrays and deactivate the current set before activating the next — see `PlayerLayoutController.apply(isLandscape:)`:
 ```swift
-func enterFullscreen() {
-    NSLayoutConstraint.deactivate(portraitConstraints)
-    NSLayoutConstraint.activate(landscapeConstraints)
+func apply(isLandscape: Bool) {
+    if isLandscape {
+        NSLayoutConstraint.deactivate(portraitConstraints)
+        NSLayoutConstraint.activate(landscapeConstraints)
+    } else {
+        NSLayoutConstraint.deactivate(landscapeConstraints)
+        NSLayoutConstraint.activate(portraitConstraints)
+    }
 }
 ```
 
 ### 6. AVFoundation in Unit Tests
 
-**Problem:** AVPlayer crashes in unit test environment.
+**Problem:** Driving a real `AVPlayer` in unit tests is unreliable — real playback needs a rendering/audio context a headless test host lacks.
 
-**Solution:**
-- Mock AVPlayerItem dependencies with protocols
-- Use integration tests for real AVFoundation testing
-- Stub video player in unit tests
+**Solution:** the `VideoPlayer` protocol is the seam. Unit tests substitute a stub/spy through it; only `AVPlayerVideoPlayerTests` constructs a real `AVPlayerVideoPlayer`, and real playback verification belongs to integration tests.
+- Stub/spy through the `VideoPlayer` protocol in unit tests
+- Construct a real `AVPlayer` only in its dedicated test / integration tests
 
 ### Anti-Patterns Summary
 
 | Anti-Pattern | Problem | Solution |
 |--------------|---------|----------|
 | Permanent bidirectional async/Combine mixing | Ownership races | One model per boundary; temporary one-way bridge OK |
-| Capturing self in a Task | Isolated-deinit crash | Capture the Sendable dependency, not self |
+| Capturing self in a Task | (historically) isolated-deinit crash — fixed in 6.3.3 | Single event queue; capture Sendable deps, not self |
 | `MainActor`-by-default in build settings | (historically) deinit crash — fixed in Swift 6.3.3 | Keep `nonisolated` (the standard Swift 6 default) |
 | Missing tearDown RunLoop | Test crashes | Add `RunLoop.current.run` |
 | Mixed constraint states | Layout crashes | Deactivate before activate |
