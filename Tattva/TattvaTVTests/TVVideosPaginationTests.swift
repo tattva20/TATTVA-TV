@@ -4,7 +4,7 @@ import StreamingCore
 @testable import TattvaTV
 
 @MainActor
-final class TVVideoFeedPaginationTests: XCTestCase {
+final class TVVideosPaginationTests: XCTestCase {
 	override func tearDown() {
 		super.tearDown()
 		RunLoop.current.run(until: Date())
@@ -16,7 +16,7 @@ final class TVVideoFeedPaginationTests: XCTestCase {
 			items: [makeVideo(title: "First"), makeVideo(title: "Second")],
 			loadMore: { Paginated(items: secondPageVideos) })
 
-		let sut = TVVideosUIComposer.feedComposedWith(
+		let sut = TVVideosUIComposer.videosComposedWith(
 			videoLoader: { firstPage },
 			imageLoader: { _ in Data() },
 			selection: { _ in })
@@ -34,7 +34,7 @@ final class TVVideoFeedPaginationTests: XCTestCase {
 	func test_displayingLastPoster_withoutMorePages_doesNotGrow() async {
 		let onlyPage = Paginated(items: [makeVideo(title: "Only")])
 
-		let sut = TVVideosUIComposer.feedComposedWith(
+		let sut = TVVideosUIComposer.videosComposedWith(
 			videoLoader: { onlyPage },
 			imageLoader: { _ in Data() },
 			selection: { _ in })
@@ -69,7 +69,7 @@ final class TVVideoFeedPaginationTests: XCTestCase {
 }
 
 @MainActor
-extension TVVideoFeedViewController {
+extension TVVideosViewController {
 	func simulateDisplayingLastPoster() {
 		let lastIndex = collectionView.numberOfItems(inSection: 0) - 1
 		guard lastIndex >= 0, let dataSource = collectionView.dataSource else { return }

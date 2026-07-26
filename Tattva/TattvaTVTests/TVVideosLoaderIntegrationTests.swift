@@ -4,7 +4,7 @@ import StreamingCore
 @testable import TattvaTV
 
 @MainActor
-final class TVVideoFeedLoaderIntegrationTests: XCTestCase {
+final class TVVideosLoaderIntegrationTests: XCTestCase {
 	override func tearDown() {
 		super.tearDown()
 		RunLoop.current.run(until: Date())
@@ -42,8 +42,8 @@ final class TVVideoFeedLoaderIntegrationTests: XCTestCase {
 	private func makeSUT(
 		videoResult: Result<Paginated<Video>, Error>,
 		imageLoader: ImageLoaderSpy = ImageLoaderSpy()
-	) -> TVVideoFeedViewController {
-		TVVideosUIComposer.feedComposedWith(
+	) -> TVVideosViewController {
+		TVVideosUIComposer.videosComposedWith(
 			videoLoader: { try videoResult.get() },
 			imageLoader: { url in try await imageLoader.load(url) },
 			selection: { _ in })

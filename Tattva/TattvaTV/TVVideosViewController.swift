@@ -2,7 +2,7 @@ import UIKit
 import StreamingCore
 import StreamingCoreAccessibility
 
-public final class TVVideoFeedViewController: UICollectionViewController {
+public final class TVVideosViewController: UICollectionViewController {
 	public var onRefresh: (() -> Void)?
 	public var onLoadMore: (() -> Void)?
 	public var onRetry: (() -> Void)?

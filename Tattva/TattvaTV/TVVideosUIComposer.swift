@@ -4,42 +4,42 @@ import StreamingCoreAccessibility
 
 @MainActor
 public enum TVVideosUIComposer {
-	public static func feedComposedWith(
+	public static func videosComposedWith(
 		videos: [Video],
 		selection: @escaping @MainActor (Video) -> Void
-	) -> TVVideoFeedViewController {
-		let feedViewController = TVVideoFeedViewController()
+	) -> TVVideosViewController {
+		let videosViewController = TVVideosViewController()
 
-		feedViewController.onRefresh = { [weak feedViewController] in
+		videosViewController.onRefresh = { [weak videosViewController] in
 			let controllers = videos.map { video in
 				let cellController = TVVideoCellController(
 					viewModel: VideoViewModel(title: video.title, description: video.description),
 					selection: { selection(video) })
 				return TVCellController(id: video, cellController)
 			}
-			feedViewController?.display(controllers)
+			videosViewController?.display(controllers)
 		}
 
-		return feedViewController
+		return videosViewController
 	}
 
-	public static func feedComposedWith(
+	public static func videosComposedWith(
 		videoLoader: @escaping () async throws -> Paginated<Video>,
 		imageLoader: @escaping @Sendable (URL) async throws -> Data,
 		selection: @escaping @MainActor (Video) -> Void
-	) -> TVVideoFeedViewController {
-		let feedViewController = TVVideoFeedViewController()
-		let adapter = TVFeedLoaderPresentationAdapter(
+	) -> TVVideosViewController {
+		let videosViewController = TVVideosViewController()
+		let adapter = TVVideosLoaderPresentationAdapter(
 			videoLoader: videoLoader,
 			imageLoader: imageLoader,
 			selection: selection)
-		adapter.feedViewController = feedViewController
+		adapter.videosViewController = videosViewController
 		adapter.announcer = UIKitAnnouncer()
 
-		feedViewController.onRefresh = { adapter.loadFeed() }
-		feedViewController.onLoadMore = { adapter.loadMoreIfAvailable() }
-		feedViewController.onRetry = { adapter.loadFeed() }
+		videosViewController.onRefresh = { adapter.loadVideos() }
+		videosViewController.onLoadMore = { adapter.loadMoreIfAvailable() }
+		videosViewController.onRetry = { adapter.loadVideos() }
 
-		return feedViewController
+		return videosViewController
 	}
 }
