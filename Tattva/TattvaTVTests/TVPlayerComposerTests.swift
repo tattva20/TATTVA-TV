@@ -84,6 +84,25 @@ final class TVPlayerComposerTests: XCTestCase {
 		XCTAssertNotNil(bundle.performanceAlertLogging, "Expected a performance-alert logging binding when a structured logger is provided")
 	}
 
+	func test_playerComposedWith_startsAndPersistsAnalyticsSession_whenAnalyticsLoggerProvided() async {
+		let store = InMemoryAnalyticsStore()
+		let analytics = PlaybackAnalyticsService(store: store)
+		let video = makeVideo()
+
+		_ = TVPlayerComposer.playerComposedWith(video: video, analyticsLogger: analytics)
+
+		var sessions: [LocalPlaybackSession] = []
+		let deadline = Date() + 2
+		while Date() < deadline {
+			sessions = (try? await store.retrieveAllSessions()) ?? []
+			if !sessions.isEmpty { break }
+			try? await Task.sleep(nanoseconds: 10_000_000)
+		}
+
+		XCTAssertEqual(sessions.count, 1, "Expected tvOS composition to start and persist an analytics session")
+		XCTAssertEqual(sessions.first?.videoID, video.id)
+	}
+
 	// MARK: - Helpers
 
 	@discardableResult

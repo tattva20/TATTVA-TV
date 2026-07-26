@@ -112,6 +112,25 @@ final class PerformanceMonitoringIntegrationTests: XCTestCase {
 		XCTAssertNil(weakAdapter, "Expected performance adapter to be deallocated when controller is deallocated")
 	}
 
+	func test_videoPlayerComposedWith_startsAndPersistsAnalyticsSession_whenAnalyticsLoggerProvided() async {
+		let store = InMemoryAnalyticsStore()
+		let analytics = PlaybackAnalyticsService(store: store)
+		let video = makeVideo()
+
+		_ = VideoPlayerUIComposer.videoPlayerComposedWith(video: video, analyticsLogger: analytics)
+
+		var sessions: [LocalPlaybackSession] = []
+		let deadline = Date() + 2
+		while Date() < deadline {
+			sessions = (try? await store.retrieveAllSessions()) ?? []
+			if !sessions.isEmpty { break }
+			try? await Task.sleep(nanoseconds: 10_000_000)
+		}
+
+		XCTAssertEqual(sessions.count, 1, "Expected composition to start and persist an analytics session")
+		XCTAssertEqual(sessions.first?.videoID, video.id, "Expected the persisted session to reference the composed video")
+	}
+
 	// MARK: - Helpers
 
 

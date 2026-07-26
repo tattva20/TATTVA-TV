@@ -32,6 +32,7 @@ public enum TVPlayerComposer {
 
 		if let analyticsLogger {
 			videoPlayer = AnalyticsVideoPlayerDecorator(decoratee: videoPlayer, analyticsLogger: analyticsLogger)
+			Task { await analyticsLogger.startSession(videoID: video.id, videoTitle: video.title, deviceInfo: .current(), appVersion: AppVersion.current) }
 		}
 
 		let stateMachine = DefaultPlaybackStateMachine()
