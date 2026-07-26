@@ -112,13 +112,25 @@ jobs:
     - name: Run tvOS Tests
       run: |
         set -o pipefail
-        xcodebuild test \
-          -workspace Tattva.xcworkspace \
-          -scheme CI_tvOS \
-          -destination 'platform=tvOS Simulator,name=Apple TV 4K (3rd generation),OS=latest' \
-          -resultBundlePath TestResults-tvOS.xcresult \
-          CODE_SIGNING_ALLOWED=NO \
-          | xcpretty --color
+        run_tvos_tests() {
+          xcodebuild test \
+            -workspace Tattva.xcworkspace \
+            -scheme CI_tvOS \
+            -destination 'platform=tvOS Simulator,name=Apple TV 4K (3rd generation),OS=latest' \
+            -resultBundlePath TestResults-tvOS.xcresult \
+            CODE_SIGNING_ALLOWED=NO \
+            2>&1 | tee xcodebuild-tvos.log | xcpretty --color
+        }
+        run_tvos_tests && exit 0
+        status=$?
+        if grep -qE "DVTiPhoneSimulator|installApplicationWithLaunchSession|Unable to boot|Failed to install" xcodebuild-tvos.log; then
+          echo "::warning::tvOS simulator install/boot flake detected — retrying once"
+          xcrun simctl shutdown all || true
+          rm -rf TestResults-tvOS.xcresult
+          run_tvos_tests
+        else
+          exit $status
+        fi
 
     - name: Upload Test Results
       uses: actions/upload-artifact@v4
