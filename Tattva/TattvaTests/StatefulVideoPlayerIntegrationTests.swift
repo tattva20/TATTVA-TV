@@ -27,14 +27,14 @@ final class StatefulVideoPlayerIntegrationTests: XCTestCase {
 
 		let controller = VideoPlayerUIComposer.videoPlayerComposedWith(video: video)
 
-		XCTAssertNotNil(controller.statefulPlayer, "Expected VideoPlayerViewController to have a stateful player after composition")
+		XCTAssertNotNil(controller.playbackCollaborators?.statefulPlayer, "Expected VideoPlayerViewController to have a stateful player after composition")
 	}
 
 	func test_statefulPlayer_exposesStatePublisher() {
 		let video = makeVideo()
 		let controller = VideoPlayerUIComposer.videoPlayerComposedWith(video: video)
 
-		XCTAssertNotNil(controller.statefulPlayer?.statePublisher, "Expected stateful player to expose state publisher")
+		XCTAssertNotNil(controller.playbackCollaborators?.statefulPlayer.statePublisher, "Expected stateful player to expose state publisher")
 	}
 
 	func test_statefulPlayer_startsInLoadingState() {
@@ -42,7 +42,7 @@ final class StatefulVideoPlayerIntegrationTests: XCTestCase {
 		let controller = VideoPlayerUIComposer.videoPlayerComposedWith(video: video)
 
 		// After composition, state should be idle (no load called yet), loading, or ready
-		let state = controller.statefulPlayer?.currentPlaybackState
+		let state = controller.playbackCollaborators?.statefulPlayer.currentPlaybackState
 		let isValidInitialState: Bool
 		switch state {
 		case .idle, .ready:

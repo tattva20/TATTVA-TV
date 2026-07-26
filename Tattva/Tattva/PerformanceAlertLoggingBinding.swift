@@ -12,21 +12,3 @@ final class PerformanceAlertLoggingBinding {
 		}
 	}
 }
-
-private nonisolated(unsafe) var performanceAlertLoggingKey: UInt8 = 0
-
-extension VideoPlayerViewController {
-	var performanceAlertLogging: PerformanceAlertLoggingBinding? {
-		get {
-			objc_getAssociatedObject(self, &performanceAlertLoggingKey) as? PerformanceAlertLoggingBinding
-		}
-		set {
-			objc_setAssociatedObject(
-				self,
-				&performanceAlertLoggingKey,
-				newValue,
-				.OBJC_ASSOCIATION_RETAIN_NONATOMIC
-			)
-		}
-	}
-}
