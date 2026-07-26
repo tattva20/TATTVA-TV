@@ -245,7 +245,10 @@ final class PlaybackPerformanceServiceTests: XCTestCase {
 		sut2.recordEvent(.firstFrameRendered)
 
 		// Give time for alert to be emitted
-		try? await Task.sleep(nanoseconds: 100_000_000)
+		let deadline = Date() + 2
+		while Date() < deadline, receivedAlerts.isEmpty {
+			try? await Task.sleep(nanoseconds: 10_000_000)
+		}
 
 		XCTAssertFalse(receivedAlerts.isEmpty)
 		let alert = receivedAlerts.first
@@ -269,7 +272,10 @@ final class PlaybackPerformanceServiceTests: XCTestCase {
 		sut.recordEvent(.playbackStalled)
 
 		// Give time for alert to be emitted
-		try? await Task.sleep(nanoseconds: 100_000_000)
+		let deadline = Date() + 2
+		while Date() < deadline, receivedAlerts.isEmpty {
+			try? await Task.sleep(nanoseconds: 10_000_000)
+		}
 
 		XCTAssertFalse(receivedAlerts.isEmpty)
 		let alert = receivedAlerts.first
@@ -290,7 +296,10 @@ final class PlaybackPerformanceServiceTests: XCTestCase {
 		sut.recordEvent(.memoryWarning(level: .warning))
 
 		// Give time for alert to be emitted
-		try? await Task.sleep(nanoseconds: 100_000_000)
+		let deadline = Date() + 2
+		while Date() < deadline, receivedAlerts.isEmpty {
+			try? await Task.sleep(nanoseconds: 10_000_000)
+		}
 
 		XCTAssertFalse(receivedAlerts.isEmpty)
 		if case .memoryPressure(let level) = receivedAlerts.first?.type {
