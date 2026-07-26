@@ -7,10 +7,11 @@
 import UIKit
 import StreamingCore
 import StreamingCoreiOS
+import StreamingCoreAccessibility
 
 @MainActor
 public enum VideoCommentsUIComposer {
-	private typealias CommentsPresentationAdapter = AsyncLoadResourcePresentationAdapter<[VideoComment], VideoCommentsViewAdapter>
+	private typealias CommentsPresentationAdapter = AsyncLoadResourcePresentationAdapter<[VideoComment], AnnouncingResourceView<VideoCommentsViewAdapter>>
 
 	public static func commentsComposedWith(
 		commentsLoader: @MainActor @escaping () async throws -> [VideoComment]
@@ -21,7 +22,10 @@ public enum VideoCommentsUIComposer {
 		commentsController.onRefresh = presentationAdapter.loadResource
 
 		presentationAdapter.presenter = LoadResourcePresenter(
-			resourceView: VideoCommentsViewAdapter(controller: commentsController),
+			resourceView: AnnouncingResourceView(
+				decoratee: VideoCommentsViewAdapter(controller: commentsController),
+				announcer: UIKitAnnouncer(),
+				describe: { "\($0.comments.count) comments" }),
 			loadingView: WeakRefVirtualProxy(commentsController),
 			errorView: WeakRefVirtualProxy(commentsController),
 			mapper: { VideoCommentsPresenter.map($0) })
