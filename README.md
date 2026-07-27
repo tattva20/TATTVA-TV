@@ -20,6 +20,21 @@
 
 ---
 
+## How this was built
+
+Built with Claude Code as a working collaborator. "AI-assisted" on its own says nothing,
+so here is the split:
+
+**Ideas** were generated in a mixed loop and selected by me. **Most of the code text was
+written by the model** — I specified it, constrained it, and decided what merged.
+**The standards** — naming, structure, comment policy, test discipline — are mine, written
+down before the code and enforced against it.
+
+Every commit is authored by me and none carries AI attribution. The history records
+decisions, not keystrokes; this section is the account of what that authorship means here.
+
+---
+
 ## Documentation
 
 For a deeper understanding of the philosophies, patterns, and principles behind this codebase, explore our detailed documentation:
