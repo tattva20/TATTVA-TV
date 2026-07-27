@@ -25,8 +25,7 @@
 Built with Claude Code as a working collaborator. "AI-assisted" on its own says nothing,
 so here is the split:
 
-**Ideas** were generated in a mixed loop and selected by me. **Most of the code text was
-written by the model** — I specified it, constrained it, and decided what merged.
+**Ideas** were generated in a mixed loop and selected by me. I specified it, constrained it, and decided what merged.
 **The standards** — naming, structure, comment policy, test discipline — are mine, written
 down before the code and enforced against it.
 
