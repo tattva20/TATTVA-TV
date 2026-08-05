@@ -1,0 +1,18 @@
+# Gitignored files copied into every new worktree.
+#
+# A worktree gets the tracked files for free. Anything deliberately kept out of
+# version control has to be named here or it simply will not exist in the new
+# tree — and the agent working there will not know it is missing.
+#
+# Build output and IDE state are excluded on purpose: they are per-tree by
+# nature, regenerating them is correct, and copying them across would hand a
+# fresh worktree a stale DerivedData to be confused by.
+
+# The project instructions. Gitignored (.gitignore:25) yet 369 lines of how
+# this repo actually works — the merge workflow, the CI lanes, the teardown
+# ordering traps. Without it a parallel agent starts with no project context at
+# all, which is the single most expensive thing to be missing.
+CLAUDE.md
+
+# Local maintenance script, untracked but referenced by the header workflow.
+update_headers.py
